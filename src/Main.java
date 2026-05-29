@@ -2,7 +2,6 @@ import modelo.*;
 import vista.MenuConsola;
 import controlador.*;
 
-import javax.swing.plaf.metal.MetalBorders;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -136,13 +135,12 @@ public class Main {
                                 break;
                             case 3:
                                 // CASO DE USO: Calcular gastos de departamento
-                                mostrarGastosDepartamento();
+                                calcularGastosDepartamento(departamentos);
                                 break;
                             case 4:
-                                System.out.println("\nVolviendo al menú de administración...\n");
                                 break;
                             default:
-                                System.out.println("Opción no válida. Introduzca un número 1-4.");
+                                MenuConsola.mensajeOpcionNoValidaMenu(1, 4);
                         }
                     } while (opcionGastos != 4);
                     break;
@@ -151,7 +149,7 @@ public class Main {
                     formularioAltaEmpleado();
                     break;
                 case 5:
-                    System.out.println("\n --- MODIFICAR EMPLEADO ---");
+                    MenuConsola.menuModificarEmpleado();
                     modificarEmpleado();
                     break;
                 case 6:
@@ -222,39 +220,7 @@ public class Main {
     //      MÉTODOS DEL ADMINISTRADOR
     // ==========================================
 
-
-    private static void mostrarGastoEmpleado() {
-        String id = MenuConsola.buscarEmpleadoPor("ID");
-        Empleado empleado = empresa.buscarPorId(id);
-        MenuConsola.mostrarGastoEmpleado(empleado);
-    }
-
-    private static void calcularGastoTotalEmpleados() {
-        double gastoTotalEmpresa = 0.0;
-        List<Empleado> empleados = empresa.obtenerEmpleados();
-        for (Empleado empleado : empleados) {
-            gastoTotalEmpresa += empleado.calcularCosteTotalEmpresa();
-        }
-        MenuConsola.mostrarGastoTotalEmpresa(gastoTotalEmpresa);
-    }
-
-    private static void mostrarGastosDepartamento() {
-        System.out.print("Introduzca el departamento que consultar: ");
-        String departamento = teclado.nextLine();
-
-        List<Empleado> empleados = new ArrayList<>();
-        empleados.addAll(empresa.buscarPorDepartamento(departamento));
-
-        if (empleados.isEmpty()) {
-            System.out.println("\nDepartamento no existente.");
-        } else {
-            double gastoDepartamento = 0;
-            for (Empleado empleado : empleados) {
-                gastoDepartamento += empleado.calcularCosteTotalEmpresa();
-            }
-            System.out.println("\nGasto total de la empresa en el departamento [" + departamento + "]: " + gastoDepartamento);
-        }
-    }
+    // Búsquedas ----------------------------------------------------------------------------
 
     private static void buscarPorId () {
         String dniBuscado = MenuConsola.buscarEmpleadoPor("ID");
@@ -292,161 +258,153 @@ public class Main {
         MenuConsola.mostrarEmpleadosEncontradosPor(empleados, "DEPARTAMENTO");
     }
 
+    // Calcular gastos -----------------------------------------------------------------------
+
+    private static void calcularGastoEmpleado() {
+        String id = MenuConsola.buscarEmpleadoPor("ID");
+        Empleado empleado = empresa.buscarPorId(id);
+        MenuConsola.mostrarGastoEmpleado(empleado);
+    }
+
+    private static void calcularGastoTotalEmpleados() {
+        double gastoTotalEmpresa = 0.0;
+        List<Empleado> empleados = empresa.obtenerEmpleados();
+        for (Empleado empleado : empleados) {
+            gastoTotalEmpresa += empleado.calcularCosteTotalEmpresa();
+        }
+        MenuConsola.mostrarGastoTotalEmpresa(gastoTotalEmpresa);
+    }
+
+    private static void calcularGastosDepartamento(HashMap<String, String> departamentos) {
+        String departamento = MenuConsola.preguntarDepartamento();
+
+        List<Empleado> empleados = empresa.buscarPorDepartamento(departamento);
+        if (empleados.isEmpty()) {
+            MenuConsola.mostrarNoExisteDepartamento();
+        } else {
+            double gastoDepartamento = 0;
+            for (Empleado empleado : empleados) {
+                gastoDepartamento += empleado.calcularCosteTotalEmpresa();
+            }
+            MenuConsola.mostrarGastoDepartamento(departamentos.get(departamento), gastoDepartamento);
+        }
+    }
+
+    // Modificar empleado ------------------------------------------------------------------------
+
     private static void modificarEmpleado() {
-        System.out.print("\nIntroduzca el ID del empleado a modificar: ");
-        String id = teclado.nextLine();
+        String id = MenuConsola.pedirIdEmpleadoAModificar();
         Empleado empleado = empresa.buscarPorId(id);
         if (empleado != null) {
-            System.out.print("\nEmpleado encontrado: [" + empleado.getId() + "] -> " + empleado.getNombre() + " " + empleado.getApellidos());
-            if (empleado instanceof EmpleadoAsalariado asalariado) {
-                System.out.println(" ( Empleado ASALARIADO )");
-            } else if (empleado instanceof EmpleadoPorHoras porHoras) {
-                System.out.println(" ( Empleado POR HORAS )");
-            } else {
-                System.out.println(" ( Empleado COMISIONISTA )");
-            }
+            MenuConsola.mostrarTipoEmpleadoEncontrado(empleado);
 
             int opcion = -1;
             do {
-                System.out.println("\nCampos a modificar:\n");
-                System.out.println("0. Volver");
-                System.out.println("1. ID: " + empleado.getId());
-                System.out.println("2. DNI: " + empleado.getDni());
-                System.out.println("3. Nombre: " + empleado.getNombre());
-                System.out.println("4. Apellidos: " + empleado.getApellidos());
-                System.out.println("5. Email: " + empleado.getEmail());
-                System.out.println("6. Fecha Alta: " + empleado.getFechaAlta());
-                System.out.println("7. Departamento: " + empleado.getDepartamento());
-                System.out.println("8. Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-
-                if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
-                    System.out.println("9. Salario Base Mensual: " + ((EmpleadoAsalariado) empleado).getSalarioBaseMensual());
-                    System.out.println("10. Complemento Puesto: " + ((EmpleadoAsalariado) empleado).getComplementoPuesto());
-                } else if (empleado instanceof EmpleadoPorHoras porHoras) { // Es por horas
-                    System.out.println("9. Horas Trabajadas: " + ((EmpleadoPorHoras) empleado).getHorasTrabajadas());
-                    System.out.println("10. Precio Hora: " + ((EmpleadoPorHoras) empleado).getPrecioHora());
-                } else { // Es comisionista
-                    System.out.println("9. Salario Mínimo Garantizado: " + ((EmpleadoComisionista) empleado).getSalarioMinimoGarantizado());
-                    System.out.println("10. Ventas Realizadas: " + ((EmpleadoComisionista) empleado).getVentasRealizadas());
-                    System.out.println("11. Porcentaje Comisión: " + ((EmpleadoComisionista) empleado).getPorcentajeComision());
-                }
-
-                System.out.print("\nIntroduzca el número del campo a modificar: ");
-                opcion = leerEnteroSeguro();
+                opcion = MenuConsola.mostrarCamposEmpleado(empleado);
 
                 switch (opcion) {
                     case 0:
-                        System.out.println("\nVolviendo al menú de administración...");
                         break;
                     case 1:
-                        System.out.print("Nuevo ID:" );
-                        String nuevoId = teclado.nextLine();
+                        String nuevoId = MenuConsola.pedirNuevoCampoString("ID");
                         if (empresa.modificarIdEmpleado(empleado.getId(), nuevoId))
-                            System.out.println("\n  - ID modificado a [" + nuevoId + "] -");
+                            MenuConsola.mostrarCampoModificado("ID", nuevoId);
                         break;
                     case 2:
-                        System.out.print("Nuevo DNI: ");
-                        String nuevoDNI = teclado.nextLine();
+                        String nuevoDNI = MenuConsola.pedirNuevoCampoString("DNI");
                         empleado.setDni(nuevoDNI);
-                        System.out.println("\n  - DNI modificado a [" + nuevoDNI + "] -");
+                        MenuConsola.mostrarCampoModificado("DNI", nuevoDNI);
                         break;
                     case 3:
-                        System.out.print("Nuevo Nombre: ");
-                        String nuevoNombre = teclado.nextLine();
+                        String nuevoNombre = MenuConsola.pedirNuevoCampoString("NOMBRE");
                         empleado.setNombre(nuevoNombre);
-                        System.out.println("\n  - Nombre modificado a [" + nuevoNombre + "] -");
+                        MenuConsola.mostrarCampoModificado("NOMBRE", nuevoNombre);
                         break;
                     case 4:
-                        System.out.print("Nuevos Apellidos: ");
-                        String nuevosApellidos = teclado.nextLine();
+                        String nuevosApellidos = MenuConsola.pedirNuevoCampoString("APELLIDOS");
                         empleado.setApellidos(nuevosApellidos);
-                        System.out.println("\n  - Apellidos modificados a [" + nuevosApellidos + "] -");
+                        MenuConsola.mostrarCampoModificado("APELLIDOS", nuevosApellidos);
                         break;
                     case 5:
-                        System.out.print("Nuevo Email: ");
-                        String nuevoEmail = teclado.nextLine();
+                        String nuevoEmail = MenuConsola.pedirNuevoCampoString("EMAIL");
                         empleado.setEmail(nuevoEmail);
-                        System.out.println("\n  - Email modificado a [" + nuevoEmail + "] -");
+                        MenuConsola.mostrarCampoModificado("EMAIL", nuevoEmail);
                         break;
                     case 6:
-                        System.out.print("Nueva Fecha Alta (DD/MM/AAAA): ");
-                        LocalDate nuevaFechaAlta = leerFechaSegura();
+                        LocalDate nuevaFechaAlta = MenuConsola.pedirNuevoCampoFecha();
                         empleado.setFechaAlta(nuevaFechaAlta);
-                        System.out.println("\n  - Fecha Alta modificada a [" + nuevaFechaAlta + "] -");
+                        MenuConsola.mostrarCampoModificado("FECHA ALTA", nuevaFechaAlta.toString());
                         break;
                     case 7:
-                        System.out.print("Nuevo Departamento: ");
-                        String nuevoDepartamento = teclado.nextLine();
+                        String nuevoDepartamento = MenuConsola.pedirNuevoCampoString("DEPARTAMENTO");
                         empleado.setDepartamento(nuevoDepartamento);
-                        System.out.println("\n  - Departamento modificado a [" + nuevoDepartamento + "] -");
+                        MenuConsola.mostrarCampoModificado("DEPARTAMENTO", nuevoDepartamento);
                         break;
                     case 8:
                         boolean bandera = false;
                         do {
-                            System.out.print("Nuevo desempeño: ");
+                            MenuConsola.pedirNuevoCampoString("DESEMPEÑO");
                             double nuevoDesempenio = leerDoubleSeguro();
                             if (nuevoDesempenio >= 0 && nuevoDesempenio <= 10) {
                                 empleado.registrarEvaluacion(nuevoDesempenio);
-                                System.out.println("\n  - Desempeño modificado a [" + nuevoDesempenio + "] -");
+                                MenuConsola.mostrarCampoModificado("DESEMPEÑO", String.valueOf(nuevoDesempenio));
                                 bandera = true;
                             } else {
-                                System.out.println("\nEl desempeño no es válido, ha de estar entre 0 y 10.");
+                                MenuConsola.mensajeDesempenioNoValido();
                             }
                         } while (!bandera);
                         break;
                     case 9:
                         if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
-                            System.out.print("Nuevo Salario Base Mensual: ");
-                            double nuevoSalarioBase = leerDoubleSeguro();
+                            double nuevoSalarioBase = MenuConsola.pedirNuevoCampoDouble("SALARIO BASE MENSUAL");
                             asalariado.setSalarioBaseMensual(nuevoSalarioBase);
-                            System.out.println("\n  - Salario Base Mensual modificado a [" + nuevoSalarioBase + "] -");
+                            MenuConsola.mostrarCampoModificado("SALARIO BASE MENSUAL", String.valueOf(nuevoSalarioBase));
+
                         } else if (empleado instanceof EmpleadoPorHoras porHoras) { // Es por horas
-                            System.out.print("Nuevas Horas Trabajadas: ");
-                            int nuevasHoras = leerEnteroSeguro();
+                            int nuevasHoras = MenuConsola.pedirNuevoCampoInt("HORAS TRABAJADAS");
                             porHoras.setHorasTrabajadas(nuevasHoras);
-                            System.out.println("\n  - Horas Trabajadas modificadas a [" + nuevasHoras + "] -");
+                            MenuConsola.mostrarCampoModificado("HORAS TRABAJADAS", String.valueOf(nuevasHoras));
+
                         } else { // Es comisionista
-                            System.out.print("Nuevo Salario Mínimo Garantizado: ");
-                            double nuevoSalarioMinimo = leerDoubleSeguro();
+                            double nuevoSalarioMinimo = MenuConsola.pedirNuevoCampoDouble("SALARIO MÍNIMO GARANTIZADO");
                             ((EmpleadoComisionista) empleado).setSalarioMinimoGarantizado(nuevoSalarioMinimo);
-                            System.out.println("\n  - Salario Mínimo Garantizado modificado a [" + nuevoSalarioMinimo + "] -");
+                            MenuConsola.mostrarCampoModificado("SALARIO MÍNIMO GARANTIZADO", String.valueOf(nuevoSalarioMinimo));
+
                         }
                         break;
                     case 10:
                         if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
-                            System.out.print("Nuevo Complemento Puesto: ");
-                            double nuevoComplemento = leerDoubleSeguro();
+                            double nuevoComplemento = MenuConsola.pedirNuevoCampoDouble("COMPLEMENTO PUESTO");
                             asalariado.setComplementoPuesto(nuevoComplemento);
-                            System.out.println("\n  - Complemento Puesto modificado a [" + nuevoComplemento + "] -");
+                            MenuConsola.mostrarCampoModificado("COMPLEMENTO PUESTO", String.valueOf(nuevoComplemento));
+
                         } else if (empleado instanceof EmpleadoPorHoras porHoras) { // Es por horas
-                            System.out.print("Nuevo Precio por Hora: ");
-                            int nuevoPrecioHora = leerEnteroSeguro();
+                            int nuevoPrecioHora = MenuConsola.pedirNuevoCampoInt("PRECIO POR HORA");
                             porHoras.setPrecioHora(nuevoPrecioHora);
-                            System.out.println("\n  - Precio por Hora modificado a [" + nuevoPrecioHora + "] -");
+                            MenuConsola.mostrarCampoModificado("PRECIO POR HORA", String.valueOf(nuevoPrecioHora));
+
                         } else { // Es comisionista
-                            System.out.print("Nuevas Ventas Realizadas: ");
-                            double nuevasVentas = leerDoubleSeguro();
+                            double nuevasVentas = MenuConsola.pedirNuevoCampoDouble("VENTAS REALIZADAS");
                             ((EmpleadoComisionista) empleado).setVentasRealizadas(nuevasVentas);
-                            System.out.println("\n  - Ventas Realizadas modificadas a [" + nuevasVentas + "] -");
+                            MenuConsola.mostrarCampoModificado("VENTAS REALIZADAS", String.valueOf(nuevasVentas));
                         }
                         break;
                     case 11:
                         if (empleado instanceof EmpleadoComisionista comisionista) {
-                            System.out.print("Nuevo Porcentaje de Comisión: ");
-                            double nuevoPorcentaje = leerDoubleSeguro();
+                            double nuevoPorcentaje = MenuConsola.pedirNuevoCampoDouble("PORCENTAJE DE COMISIÓN");
                             comisionista.setPorcentajeComision(nuevoPorcentaje);
-                            System.out.println("\n  - Porcentaje de Comisión modificado a [" + nuevoPorcentaje + "] -");
+                            MenuConsola.mostrarCampoModificado("PORCENTAJE DE COMISIÓN", String.valueOf(nuevoPorcentaje));
                         } else {
-                            System.out.println("\nOpción no válida. Introduzca un número 0-10.");
+                            MenuConsola.mensajeOpcionNoValidaMenu(0, 10);
                         }
                         break;
                     default:
-                        System.out.println("\nOpción no válida. Introduzca un número 0-11.");
+                        MenuConsola.mensajeOpcionNoValidaMenu(0, 11);
                         break;
                 }
             } while (opcion != 0);
         } else {
-            System.out.println("\nNo existe ningún empleado con ese ID.");
+            MenuConsola.mostrarEmpleadoEncontradoPor(null,"ID");
         }
     }
 

@@ -1,6 +1,9 @@
 package vista;
 
 import modelo.Empleado;
+import modelo.EmpleadoAsalariado;
+import modelo.EmpleadoComisionista;
+import modelo.EmpleadoPorHoras;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,18 +28,15 @@ public class MenuConsola {
         System.out.println("1. Entrar como Administrador");
         System.out.println("2. Entrar como Empleado");
         System.out.println("3. Salir");
+
         System.out.print("\nSeleccione una opción: ");
 
         return leerEnteroSeguro();
     }
 
-    //Mensaje de salida de la aplicación =====================================================
-
     public static void mensajeSalidaAplicacion() {
         System.out.println("\nSaliendo de la aplicación...");
     }
-
-    // Mensaje opcion no valida para cualquier menú =====================================================
 
     public static void mensajeOpcionNoValidaMenu(int primeraOpcion, int ultimaOpcion) {
         System.out.println("\nOpción no válida. Introduzca un número entre " + primeraOpcion + " y " + ultimaOpcion + ".");
@@ -45,6 +45,7 @@ public class MenuConsola {
     // ==========================================
     //          MENÚ DEL ADMINISTRADOR
     // ==========================================
+
     public static int menuAdministrador() {
         limpiarPantalla();
 
@@ -57,6 +58,7 @@ public class MenuConsola {
         System.out.println("6. Eliminar empleado");
         System.out.println("7. Lista de departamentos");
         System.out.println("8. Volver");
+
         System.out.print("\nSeleccione una opción: ");
 
         return leerEnteroSeguro();
@@ -65,6 +67,7 @@ public class MenuConsola {
     // =======================================================
     //                MENÚ MOSTRAR EMPLEADOS
     // =======================================================
+
     public static int menuMostrarEmpleados() {
         limpiarPantalla();
 
@@ -72,15 +75,15 @@ public class MenuConsola {
         System.out.println(" --- MOSTRAR EMPLEADOS ---");
         System.out.println(" -------------------------\n");
         System.out.println("1. Mostrar todos los empleados");
-        System.out.println("2. Mostrar todos los empleados ordenados por antiguedad");
+        System.out.println("2. Mostrar todos los empleados ordenados por antigüedad");
         System.out.println("3. Mostrar todos los empleados ordenados por desempeño");
         System.out.println("4. Volver");
+
         System.out.print("\nSeleccione una opcion: ");
 
         return leerEnteroSeguro();
     }
 
-    // Mostrar lista de empleados
     public static void mostrarListaEmpleados (String titulo, List<Empleado> empleados, HashMap<String, String> departamentos) {
         if (empleados.isEmpty()) {
             System.out.println("\nNo hay empleados en el sistema.");
@@ -119,6 +122,7 @@ public class MenuConsola {
         System.out.println("5. Buscar empleado por Email");
         System.out.println("6. Buscar empleado por Departamento");
         System.out.println("7. Volver");
+
         System.out.print("\nSeleccione una opcion: ");
 
         return leerEnteroSeguro();
@@ -168,6 +172,7 @@ public class MenuConsola {
         System.out.println("2. Calcular gastos de empresa de un empleado (por ID)");
         System.out.println("3. Calcular gastos de empresa de un departamento");
         System.out.println("4. Volver");
+
         System.out.print("\nSeleccione una opcion: ");
 
         return leerEnteroSeguro();
@@ -183,8 +188,6 @@ public class MenuConsola {
     }
 
     public static void mostrarGastoEmpleado (Empleado empleado) {
-        limpiarPantalla();
-
         if (empleado == null) {
             System.out.println("No existe ningún empleado con ese ID.");
         } else {
@@ -192,6 +195,143 @@ public class MenuConsola {
             System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpresa());
         }
     }
+
+    public static String preguntarDepartamento() {
+        limpiarPantalla();
+
+        System.out.print("Introduzca el departamento que consultar: ");
+        return teclado.nextLine().toUpperCase();
+    }
+
+    public static void mostrarNoExisteDepartamento() {
+        System.out.println("\nNo existe el departamento buscado.");
+
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    public static void mostrarGastoDepartamento(String departamento, double gastoDepartamento) {
+        System.out.println("\nLos gastos del departamento (" + departamento + ") son: " + gastoDepartamento );
+
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    // =======================================================
+    //                MODIFICAR EMPLEADO
+    // =======================================================
+
+    public static void menuModificarEmpleado () {
+        limpiarPantalla();
+
+        System.out.println("---------------------------");
+        System.out.println(" --- MODIFICAR EMPLEADO ---");
+        System.out.println(" ---------------------------\n");
+    }
+
+    public static String pedirIdEmpleadoAModificar () {
+        System.out.print("Introduzca el Id del empleado que desea modificar: ");
+        return teclado.nextLine();
+    }
+
+    public static void mostrarTipoEmpleadoEncontrado (Empleado empleado) {
+        System.out.print("Empleado encontrado: " + empleado);
+        if (empleado instanceof EmpleadoAsalariado asalariado) {
+            System.out.println(" ( Empleado ASALARIADO )");
+        } else if (empleado instanceof EmpleadoPorHoras porHoras) {
+            System.out.println(" ( Empleado POR HORAS )");
+        } else {
+            System.out.println(" ( Empleado COMISIONISTA )");
+        }
+    }
+
+    public static int mostrarCamposEmpleado (Empleado empleado) {
+        System.out.println("-----------------------------------------");
+        System.out.println("\nCampos a modificar:\n");
+        System.out.println("0. Volver");
+        System.out.println("1. ID: " + empleado.getId());
+        System.out.println("2. DNI: " + empleado.getDni());
+        System.out.println("3. Nombre: " + empleado.getNombre());
+        System.out.println("4. Apellidos: " + empleado.getApellidos());
+        System.out.println("5. Email: " + empleado.getEmail());
+        System.out.println("6. Fecha Alta: " + empleado.getFechaAlta());
+        System.out.println("7. Departamento: " + empleado.getDepartamento());
+        System.out.println("8. Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
+
+        if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
+            System.out.println("9. Salario Base Mensual: " + asalariado.getSalarioBaseMensual());
+            System.out.println("10. Complemento Puesto: " + asalariado.getComplementoPuesto());
+            System.out.println("-----------------------------------------");
+
+            System.out.print("\nSeleccione un campo a modificar: ");
+            return leerEnteroSeguro();
+
+        } else if (empleado instanceof EmpleadoPorHoras porHoras) { // Es por horas
+            System.out.println("9. Horas Trabajadas: " + porHoras.getHorasTrabajadas());
+            System.out.println("10. Precio Hora: " + porHoras.getPrecioHora());
+            System.out.println("-----------------------------------------");
+
+            System.out.print("\nSeleccione un campo a modificar: ");
+            return leerEnteroSeguro();
+
+        } else { // Es comisionista
+            System.out.println("9. Salario Mínimo Garantizado: " + ((EmpleadoComisionista) empleado).getSalarioMinimoGarantizado());
+            System.out.println("10. Ventas Realizadas: " + ((EmpleadoComisionista) empleado).getVentasRealizadas());
+            System.out.println("11. Porcentaje Comisión: " + ((EmpleadoComisionista) empleado).getPorcentajeComision());
+            System.out.println("-----------------------------------------");
+
+            System.out.print("\nSeleccione un campo a modificar: ");
+            return leerEnteroSeguro();
+        }
+    }
+    public static int pedirNuevoCampoInt(String campo) {
+        System.out.print("\nNuevo " + campo + ":" );
+        return leerEnteroSeguro();
+    }
+
+    public static double pedirNuevoCampoDouble(String campo) {
+        System.out.print("\nNuevo " + campo + ":" );
+        return leerDoubleSeguro();
+    }
+
+    public static String pedirNuevoCampoString (String campo) {
+        System.out.print("\nNuevo " + campo + ":" );
+        return teclado.nextLine();
+    }
+
+    public static LocalDate pedirNuevoCampoFecha() {
+        System.out.print("\nNueva Fecha Alta (DD/MM/AAAA): ");
+        return leerFechaSegura();
+    }
+
+    public static void mostrarCampoModificado (String campo, String modificacion) {
+        System.out.println("\n  - " + campo + " modificado a [ " + modificacion + " ] -");
+    }
+
+    public static void mensajeDesempenioNoValido () {
+        System.out.println("\nEl desempeño no es válido, ha de estar entre 0 y 10.");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -252,6 +392,5 @@ public class MenuConsola {
             }
         }
     }
-
 
 }

@@ -62,7 +62,9 @@ public class MenuConsola {
         return leerEnteroSeguro();
     }
 
-    // Menú MOSTRAR EMPLEADOS
+    // =======================================================
+    //                MENÚ MOSTRAR EMPLEADOS
+    // =======================================================
     public static int menuMostrarEmpleados() {
         limpiarPantalla();
 
@@ -85,20 +87,113 @@ public class MenuConsola {
         } else {
             limpiarPantalla();
 
-            System.out.println("================================================================================================================");
+            System.out.println("========================================================================================================================================================================");
             System.out.print("                                       ");
             System.out.println(titulo);
-            System.out.println("================================================================================================================");
+            System.out.println("========================================================================================================================================================================");
 
             for (Empleado empleado : empleados) {
                 String nombreDepto = departamentos.getOrDefault(empleado.getDepartamento(), "Desconocido");
-                System.out.println(empleado.toString() + " | (" + nombreDepto + ") | Salario Bruto: " + empleado.calcularSalarioBruto() + "€");
-                System.out.println("================================================================================================================");
+                System.out.println(empleado.toString() + " | (" + nombreDepto + ") | Fecha Alta: " + empleado.getFechaAlta()  + " | Desempeño: " + empleado.getDesempenio() + " | Salario Bruto: " + empleado.calcularSalarioBruto() + "€" );
+            }
+        }
+        System.out.println("========================================================================================================================================================================");
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    // =======================================================
+    //          MENÚ BÚSQUEDA DE EMPLEADOS
+    // =======================================================
+
+    public static int menuBuscarEmpleados() {
+        limpiarPantalla();
+
+        System.out.println("-----------------------------");
+        System.out.println(" --- BÚSQUEDA DE EMPLEADOS ---");
+        System.out.println(" -----------------------------\n");
+        System.out.println("1. Buscar empleado por ID");
+        System.out.println("2. Buscar empleado por DNI");
+        System.out.println("3. Buscar empleado por Nombre");
+        System.out.println("4. Buscar empleado por Apellidos");
+        System.out.println("5. Buscar empleado por Email");
+        System.out.println("6. Buscar empleado por Departamento");
+        System.out.println("7. Volver");
+        System.out.print("\nSeleccione una opcion: ");
+
+        return leerEnteroSeguro();
+    }
+
+    public static String buscarEmpleadoPor (String buscarPor) {
+        limpiarPantalla();
+
+        System.out.print("\nIntroduzca el " + buscarPor + " a buscar: ");
+        return teclado.nextLine();
+    }
+
+    public static void mostrarEmpleadoEncontradoPor (Empleado empleado, String buscadoPor) {
+        if (empleado == null) {
+            System.out.println("\nNo existe ningún empleado con ese " + buscadoPor + ".");
+        } else {
+            System.out.println("\nEmpleado encontrado:\n" + empleado);
+        }
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    public static void mostrarEmpleadosEncontradosPor (List<Empleado> empleados, String buscadoPor) {
+        if (empleados.isEmpty()) {
+            System.out.println("\nNo existe ningún empleado con ese " + buscadoPor + ".");
+        } else {
+            System.out.println("\nEmpleados encontrados:\n");
+            for (Empleado empleado : empleados) {
+                System.out.println(empleado);
             }
         }
         System.out.print("\nPresione INTRO para volver al menú anterior...");
         teclado.nextLine();
     }
+
+    // =======================================================
+    //                MENÚ CALCULAR GASTOS
+    // =======================================================
+
+    public static int menuCalcularGastos () {
+        limpiarPantalla();
+
+        System.out.println("-------------------------");
+        System.out.println(" --- CALCULAR GASTOS ---");
+        System.out.println(" -------------------------");
+        System.out.println("1. Calcular gastos totales de empresa (de todos los empleados)");
+        System.out.println("2. Calcular gastos de empresa de un empleado (por ID)");
+        System.out.println("3. Calcular gastos de empresa de un departamento");
+        System.out.println("4. Volver");
+        System.out.print("\nSeleccione una opcion: ");
+
+        return leerEnteroSeguro();
+    }
+
+    public static void mostrarGastoTotalEmpresa(double gastoTotalEmpresa) {
+        limpiarPantalla();
+
+        System.out.println("Gasto total de la empresa en empleados: " + gastoTotalEmpresa + "€");
+
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    public static void mostrarGastoEmpleado (Empleado empleado) {
+        limpiarPantalla();
+
+        if (empleado == null) {
+            System.out.println("No existe ningún empleado con ese ID.");
+        } else {
+            System.out.println("\nEmpleado encontrado:\n" + empleado);
+            System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpresa());
+        }
+    }
+
+
 
 
 
@@ -157,4 +252,6 @@ public class MenuConsola {
             }
         }
     }
+
+
 }

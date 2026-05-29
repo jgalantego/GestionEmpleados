@@ -65,7 +65,7 @@ public abstract class Empleado implements Evaluable {
 
     @Override
     public String toString() {
-        return "[" + id + "] " + apellidos + ", " + nombre + " | DNI: " + dni + " | Dept: " + departamento;
+        return "[" + id + "] " + apellidos + ", " + nombre + " | DNI: " + dni + " | Email: " + email + " | Dept: " + departamento;
     }
 
     private static final double TIPO_GENERAL_EMPRESA = 0.3;

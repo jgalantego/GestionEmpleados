@@ -2,6 +2,7 @@ package controlador;
 
 import modelo.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -207,13 +208,14 @@ public class GestionEmpresa {
     // CASO DE USO: Obtener lista ordenada de empleados por antiguedad
     public List<Empleado> obtenerEmpleadosOrdenadosPorAntiguedad() {
         List<Empleado> listaOrdenada = new ArrayList<>(this.listaEmpleados);
-        listaOrdenada.sort((e1, e2) -> e2.getFechaAlta().compareTo(e1.getFechaAlta()));
+        listaOrdenada.sort(Comparator.comparing(Empleado::getFechaAlta));
         return listaOrdenada;
     }
     // CASO DE USO: Obtener lista ordenada de empleados por desempeño
     public List<Empleado> obtenerEmpleadosOrdenadosPorDesempenio() {
         List<Empleado> listaOrdenada = new ArrayList<>(this.listaEmpleados);
-        listaOrdenada.sort((e1, e2) -> Double.compare(e2.getDesempenio(), e1.getDesempenio()));
+        listaOrdenada.sort(Comparator.comparing(Empleado::getDesempenio));
+        //listaOrdenada.sort((e1, e2) -> Double.compare(e2.getDesempenio(), e1.getDesempenio()));
         return listaOrdenada;
     }
 

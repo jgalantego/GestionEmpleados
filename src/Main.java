@@ -72,35 +72,26 @@ public class Main {
                                 MenuConsola.mostrarListaEmpleados("LISTA DE TODOS LOS EMPLEADOS", empleados, departamentos);
                                 break;
                             case 2:
-                                mostrarEmpleadosPorAntiguedad();
+                                empleados = empresa.obtenerEmpleadosOrdenadosPorAntiguedad();
+                                MenuConsola.mostrarListaEmpleados("LISTA DE EMPLEADOS ORDENADOS POR ANTIGUEDAD", empleados, departamentos);
                                 break;
                             case 3:
-                                mostrarEmpleadosPorDesempenio();
+                                empleados = empresa.obtenerEmpleadosOrdenadosPorDesempenio();
+                                MenuConsola.mostrarListaEmpleados("LISTA DE EMPLEADOS ORDENADOS POR DESEMPEÑO", empleados, departamentos);
                                 break;
                             case 4:
-                                System.out.println("\nVolviendo al menú de administración...\n");
+                                // Volver al menu administración
                                 break;
                             default:
-                                System.out.println("Opción no válida. Introduzca un número 1-4.");
+                                MenuConsola.mensajeOpcionNoValidaMenu(1, 4);
+                                break;
                         }
                     } while (opcionMostrar != 4);
                     break;
                 case 2:
                     int opcionBuscar;
                     do {
-                        System.out.println("\n -----------------------------");
-                        System.out.println(" --- BÚSQUEDA DE EMPLEADOS ---");
-                        System.out.println(" -----------------------------");
-                        System.out.println("1. Buscar empleado por ID");
-                        System.out.println("2. Buscar empleado por DNI");
-                        System.out.println("3. Buscar empleado por Nombre");
-                        System.out.println("4. Buscar empleado por Apellidos");
-                        System.out.println("5. Buscar empleado por Email");
-                        System.out.println("6. Buscar empleado por Departamento");
-                        System.out.println("7. Volver");
-                        System.out.print("Seleccione una opcion: ");
-
-                        opcionBuscar = leerEnteroSeguro();
+                        opcionBuscar = MenuConsola.menuBuscarEmpleados();
 
                         switch (opcionBuscar) {
                             case 1:
@@ -122,35 +113,26 @@ public class Main {
                                 buscarPorDepartamento();
                                 break;
                             case 7:
-                                System.out.println("\nVolviendo al menú de administración...\n");
+                                // Volver al menú de administración
                                 break;
                             default:
-                                System.out.println("Opción no válida. Introduzca un número 1-7.");
+                                MenuConsola.mensajeOpcionNoValidaMenu(1, 7);
                         }
                     } while (opcionBuscar != 7);
                     break;
                 case 3:
                     int opcionGastos;
                     do {
-                        System.out.println("\n -------------------------");
-                        System.out.println(" --- MOSTRAR GASTOS ---");
-                        System.out.println(" -------------------------");
-                        System.out.println("1. Mostrar gastos de empresa de todos los empleados");
-                        System.out.println("2. Mostrar gastos de empresa de un empleado (por ID)");
-                        System.out.println("3. Mostrar gastos de empresa de un departamento");
-                        System.out.println("4. Volver");
-                        System.out.print("Seleccione una opcion: ");
-
-                        opcionGastos = leerEnteroSeguro();
+                        opcionGastos = MenuConsola.menuCalcularGastos();
 
                         switch (opcionGastos) {
                             case 1:
                                 // CASO DE USO: Calcular gastos de empleados
-                                mostrarGastosEmpleados();
+                                calcularGastoTotalEmpleados();
                                 break;
                             case 2:
                                 // CASO DE USO: Calcular gasto de empleado
-                                mostrarGastoEmpleado();
+                                calcularGastoEmpleado();
                                 break;
                             case 3:
                                 // CASO DE USO: Calcular gastos de departamento
@@ -240,51 +222,20 @@ public class Main {
     //      MÉTODOS DEL ADMINISTRADOR
     // ==========================================
 
-    private static void mostrarEmpleadosPorDesempenio() {
-        List<Empleado> listaOrdenada = new ArrayList<>();
-        listaOrdenada.addAll(empresa.obtenerEmpleadosOrdenadosPorDesempenio());
-        System.out.println("\n==========================================================================");
-        System.out.println("         LISTADO DE TRABAJADORES POR DESEMPEÑO (mejores primero)");
-        System.out.println("==========================================================================");
-        for (Empleado empleado : listaOrdenada) {
-            System.out.println( empleado.toString() + " | Salario Bruto: " + empleado.calcularSalarioBruto() + "€" + " | Desempeño: " + empleado.getDesempenio() );
-        }
-    }
-
-    private static void mostrarEmpleadosPorAntiguedad() {
-        List<Empleado> listaOrdenada = new ArrayList<>();
-        listaOrdenada.addAll(empresa.obtenerEmpleadosOrdenadosPorAntiguedad());
-        System.out.println("\n==========================================================================");
-        System.out.println("         LISTADO DE TRABAJADORES POR ANTIGUEDAD (nuevos primero)");
-        System.out.println("==========================================================================");
-        for (Empleado empleado : listaOrdenada) {
-            System.out.println( empleado.toString() + " | Salario Bruto: " + empleado.calcularSalarioBruto() + "€" + " | Fecha Alta: " + empleado.getFechaAlta() );
-        }
-    }
 
     private static void mostrarGastoEmpleado() {
-        System.out.print("\nIntroduzca el ID a buscar: ");
-        String id = teclado.nextLine();
+        String id = MenuConsola.buscarEmpleadoPor("ID");
         Empleado empleado = empresa.buscarPorId(id);
-        if (empleado != null) {
-            System.out.println("\nEmpleado encontrado: " + empleado);
-            System.out.println("Gasto total de empresa: " + empleado.calcularCosteTotalEmpresa());
-        } else {
-            System.out.println("No existe ningún empleado con ese ID.");
-        }
+        MenuConsola.mostrarGastoEmpleado(empleado);
     }
 
-    private static void mostrarGastosEmpleados() {
-        List<Empleado> empleados = new ArrayList<>();
-        empleados.addAll(empresa.obtenerEmpleadosOrdenadosPorAntiguedad());
-
-        double gastoTotal = 0;
-
+    private static void calcularGastoTotalEmpleados() {
+        double gastoTotalEmpresa = 0.0;
+        List<Empleado> empleados = empresa.obtenerEmpleados();
         for (Empleado empleado : empleados) {
-            gastoTotal += empleado.calcularCosteTotalEmpresa();
+            gastoTotalEmpresa += empleado.calcularCosteTotalEmpresa();
         }
-
-        System.out.println("\nGasto total de la empresa en todos los empleados: " + gastoTotal);
+        MenuConsola.mostrarGastoTotalEmpresa(gastoTotalEmpresa);
     }
 
     private static void mostrarGastosDepartamento() {
@@ -306,87 +257,39 @@ public class Main {
     }
 
     private static void buscarPorId () {
-        System.out.print("Introduzca el ID a buscar: ");
-        String id = teclado.nextLine();
-        Empleado empleado = empresa.buscarPorId(id);
-        if (empleado != null) {
-            System.out.println("\nEmpleado encontrado: " + empleado);
-            System.out.println("Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-        } else {
-            System.out.println("\nNo existe ningún empleado con ese ID.");
-        }
+        String dniBuscado = MenuConsola.buscarEmpleadoPor("ID");
+        Empleado empleado = empresa.buscarPorId(dniBuscado);
+        MenuConsola.mostrarEmpleadoEncontradoPor(empleado, "ID");
     }
 
     private static void buscarPorDNI () {
-        System.out.print("Introduzca el DNI a buscar: ");
-        String dniBuscado = teclado.nextLine();
+        String dniBuscado = MenuConsola.buscarEmpleadoPor("DNI");
         Empleado empleado = empresa.buscarPorDni(dniBuscado);
-        if (empleado != null) {
-            System.out.println("\nEmpleado encontrado: " + empleado);
-            System.out.println("Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-        } else {
-            System.out.println("\nNo existe ningún empleado con ese DNI.");
-        }
+        MenuConsola.mostrarEmpleadoEncontradoPor(empleado, "DNI");
     }
 
     private static void buscarPorNombre () {
-        System.out.print("Introduzca el Nombre a buscar: ");
-        String nombre = teclado.nextLine();
-        List<Empleado> empleados = new ArrayList<>();
-        empleados.addAll(empresa.buscarPorNombre(nombre));
-        if (!empleados.isEmpty()) {
-            for (Empleado empleado : empleados) {
-                System.out.println("\nEmpleado encontrado: " + empleado);
-                System.out.println("Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-            }
-        } else {
-            System.out.println("\nNo existe ningún empleado con ese Nombre.");
-        }
+        String nombre = MenuConsola.buscarEmpleadoPor("NOMBRE");
+        List<Empleado> empleados = empresa.buscarPorNombre(nombre);
+        MenuConsola.mostrarEmpleadosEncontradosPor(empleados, "NOMBRE");
     }
 
     private static void buscarPorApellido () {
-        System.out.print("Introduzca el Apellido a buscar: ");
-        String apellido = teclado.nextLine();
-        List<Empleado> empleados = new ArrayList<>();
-        empleados.addAll(empresa.buscarPorApellido(apellido));
-        if (!empleados.isEmpty()) {
-            for (Empleado empleado : empleados) {
-                System.out.println("\nEmpleado encontrado: " + empleado);
-                System.out.println("Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-            }
-        } else {
-            System.out.println("\nNo existe ningún empleado con ese Apellido.");
-        }
+        String apellido = MenuConsola.buscarEmpleadoPor("APELLIDO");
+        List<Empleado> empleados = empresa.buscarPorApellido(apellido);
+        MenuConsola.mostrarEmpleadosEncontradosPor(empleados, "APELLIDO");
     }
 
     private static void buscarPorEmail () {
-        System.out.print("Introduzca el Email a buscar: ");
-        String email = teclado.nextLine();
-        List<Empleado> empleados = new ArrayList<>();
-        empleados.addAll(empresa.buscarPorEmail(email));
-        if (!empleados.isEmpty()) {
-            for (Empleado empleado : empleados) {
-                System.out.println("\nEmpleado encontrado: " + empleado);
-                System.out.println("Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-            }
-        } else {
-            System.out.println("\nNo existe ningún empleado con ese Email.");
-        }
+        String email = MenuConsola.buscarEmpleadoPor("EMAIL");
+        List<Empleado> empleados = empresa.buscarPorEmail(email);
+        MenuConsola.mostrarEmpleadosEncontradosPor(empleados, "EMAIL");
     }
 
     private static void buscarPorDepartamento () {
-        System.out.print("Introduzca la abreviatura del Departamento a buscar: ");
-        String departamento = teclado.nextLine();
-        List<Empleado> empleados = new ArrayList<>();
-        empleados.addAll(empresa.buscarPorDepartamento(departamento));
-        if (!empleados.isEmpty()) {
-            for (Empleado empleado : empleados) {
-                System.out.println("\nEmpleado encontrado: " + empleado);
-                System.out.println("Desempeño del empleado: " + empleado.obtenerEstadoDesempenio());
-            }
-        } else {
-            System.out.println("\nNo existe ningún empleado en ese Departamento.");
-        }
+        String departamento = MenuConsola.buscarEmpleadoPor("DEPARTAMENTO (abreviatura)");
+        List<Empleado> empleados = empresa.buscarPorDepartamento(departamento);
+        MenuConsola.mostrarEmpleadosEncontradosPor(empleados, "DEPARTAMENTO");
     }
 
     private static void modificarEmpleado() {

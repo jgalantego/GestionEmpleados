@@ -1,6 +1,7 @@
 package controlador;
 
 import modelo.Empleado;
+import modelo.Empresa;
 
 import java.util.Scanner;
 
@@ -8,10 +9,10 @@ public class Autenticador {
     private static final String ADMIN_USER = "admin";
     private static final String ADMIN_PASS = "admin";
 
-    GestionEmpresa empresa;
+    Empresa empresa;
     Scanner teclado;
 
-    public Autenticador (GestionEmpresa empresa, Scanner teclado) {
+    public Autenticador (Empresa empresa, Scanner teclado) {
         this.empresa = empresa;
         this.teclado = teclado;
     }

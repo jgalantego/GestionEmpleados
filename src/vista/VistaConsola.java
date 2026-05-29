@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-public class MenuConsola {
+public class VistaConsola {
     public static final Scanner teclado = new Scanner(System.in);
 
     // =======================================================
@@ -21,7 +21,7 @@ public class MenuConsola {
     public static int menuPrincipal () {
         limpiarPantalla();
 
-        System.out.println("=========================================");
+        System.out.println("\n=========================================");
         System.out.println("     SISTEMA DE GESTIÓN DE EMPLEADOS");
         System.out.println("=========================================");
         System.out.println("\n--- SELECCIÓN DE PERFIL DE ACCESO ---\n");
@@ -49,7 +49,7 @@ public class MenuConsola {
     public static int menuAdministrador() {
         limpiarPantalla();
 
-        System.out.println("----- MENÚ DE ADMINISTRACIÓN -----\n");
+        System.out.println("\n----- MENÚ DE ADMINISTRACIÓN -----\n");
         System.out.println("1. Mostrar lista de empleados");
         System.out.println("2. Buscar empleados");
         System.out.println("3. Calcular gastos empresa");
@@ -57,7 +57,7 @@ public class MenuConsola {
         System.out.println("5. Modificar empleado");
         System.out.println("6. Eliminar empleado");
         System.out.println("7. Lista de departamentos");
-        System.out.println("8. Volver");
+        System.out.println("8. Cerrar Sesión de Administrador");
 
         System.out.print("\nSeleccione una opción: ");
 
@@ -71,7 +71,7 @@ public class MenuConsola {
     public static int menuMostrarEmpleados() {
         limpiarPantalla();
 
-        System.out.println(" -------------------------");
+        System.out.println("\n -------------------------");
         System.out.println(" --- MOSTRAR EMPLEADOS ---");
         System.out.println(" -------------------------\n");
         System.out.println("1. Mostrar todos los empleados");
@@ -112,7 +112,7 @@ public class MenuConsola {
     public static int menuBuscarEmpleados() {
         limpiarPantalla();
 
-        System.out.println("-----------------------------");
+        System.out.println("\n -----------------------------");
         System.out.println(" --- BÚSQUEDA DE EMPLEADOS ---");
         System.out.println(" -----------------------------\n");
         System.out.println("1. Buscar empleado por ID");
@@ -165,7 +165,7 @@ public class MenuConsola {
     public static int menuCalcularGastos () {
         limpiarPantalla();
 
-        System.out.println("-------------------------");
+        System.out.println("\n -------------------------");
         System.out.println(" --- CALCULAR GASTOS ---");
         System.out.println(" -------------------------");
         System.out.println("1. Calcular gastos totales de empresa (de todos los empleados)");
@@ -181,7 +181,7 @@ public class MenuConsola {
     public static void mostrarGastoTotalEmpresa(double gastoTotalEmpresa) {
         limpiarPantalla();
 
-        System.out.println("Gasto total de la empresa en empleados: " + gastoTotalEmpresa + "€");
+        System.out.println("\nGasto total de la empresa en empleados: " + gastoTotalEmpresa + "€");
 
         System.out.print("\nPresione INTRO para volver al menú anterior...");
         teclado.nextLine();
@@ -189,7 +189,7 @@ public class MenuConsola {
 
     public static void mostrarGastoEmpleado (Empleado empleado) {
         if (empleado == null) {
-            System.out.println("No existe ningún empleado con ese ID.");
+            System.out.println("\nNo existe ningún empleado con ese ID.");
         } else {
             System.out.println("\nEmpleado encontrado:\n" + empleado);
             System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpresa());
@@ -199,7 +199,7 @@ public class MenuConsola {
     public static String preguntarDepartamento() {
         limpiarPantalla();
 
-        System.out.print("Introduzca el departamento que consultar: ");
+        System.out.print("\nIntroduzca el departamento que consultar: ");
         return teclado.nextLine().toUpperCase();
     }
 
@@ -224,13 +224,13 @@ public class MenuConsola {
     public static void menuModificarEmpleado () {
         limpiarPantalla();
 
-        System.out.println("---------------------------");
+        System.out.println("\n ---------------------------");
         System.out.println(" --- MODIFICAR EMPLEADO ---");
-        System.out.println(" ---------------------------\n");
+        System.out.println(" ---------------------------");
     }
 
     public static String pedirIdEmpleadoAModificar () {
-        System.out.print("Introduzca el Id del empleado que desea modificar: ");
+        System.out.print("\nIntroduzca el Id del empleado que desea modificar: ");
         return teclado.nextLine();
     }
 
@@ -246,8 +246,8 @@ public class MenuConsola {
     }
 
     public static int mostrarCamposEmpleado (Empleado empleado) {
-        System.out.println("-----------------------------------------");
-        System.out.println("\nCampos a modificar:\n");
+        System.out.println("\n-----------------------------------------");
+        System.out.println("Campos a modificar:\n");
         System.out.println("0. Volver");
         System.out.println("1. ID: " + empleado.getId());
         System.out.println("2. DNI: " + empleado.getDni());
@@ -285,17 +285,17 @@ public class MenuConsola {
         }
     }
     public static int pedirNuevoCampoInt(String campo) {
-        System.out.print("\nNuevo " + campo + ":" );
+        System.out.print("\nNuevo " + campo + ": " );
         return leerEnteroSeguro();
     }
 
     public static double pedirNuevoCampoDouble(String campo) {
-        System.out.print("\nNuevo " + campo + ":" );
+        System.out.print("\nNuevo " + campo + ": " );
         return leerDoubleSeguro();
     }
 
     public static String pedirNuevoCampoString (String campo) {
-        System.out.print("\nNuevo " + campo + ":" );
+        System.out.print("\nNuevo " + campo + ": " );
         return teclado.nextLine();
     }
 
@@ -306,11 +306,153 @@ public class MenuConsola {
 
     public static void mostrarCampoModificado (String campo, String modificacion) {
         System.out.println("\n  - " + campo + " modificado a [ " + modificacion + " ] -");
+
+        System.out.print("\nPresione INTRO para volver al selector de campos...");
+        teclado.nextLine();
     }
 
     public static void mensajeDesempenioNoValido () {
         System.out.println("\nEl desempeño no es válido, ha de estar entre 0 y 10.");
     }
+
+    // =======================================================
+    //                  ELIMINAR EMPLEADO
+    // =======================================================
+
+    public static void menuEliminarEmpleado () {
+        limpiarPantalla();
+
+        System.out.println("\n --------------------------");
+        System.out.println(" --- ELIMINAR EMPLEADO ---");
+        System.out.println(" --------------------------");
+    }
+
+    public static String pedirIdEmpleadoAEliminar () {
+        limpiarPantalla();
+
+        System.out.print("\nIntroduzca el Id del empleado que desea eliminar: ");
+        return teclado.nextLine();
+    }
+
+    public static void mostrarEmpleadoEliminado (Empleado empleadoEliminado) {
+        System.out.println("\nEmpleado ( " + empleadoEliminado + " ) eliminado con éxito.");
+
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+
+        limpiarPantalla();
+    }
+
+    // =======================================================
+    //                  MOSTRAR DEPARTAMENTOS
+    // =======================================================
+
+    public static void menuMostrarDepartamentos () {
+        limpiarPantalla();
+
+        System.out.println("\n ------------------------------");
+        System.out.println(" --- MOSTRAR DEPARTAMENTOS ---");
+        System.out.println(" -----------------------------\n");
+    }
+
+    public static void mostrarDatosDepartamento(String codigo, String nombre, int numEmpleados) {
+        System.out.println( codigo + " ( " + nombre + " ) -> " + numEmpleados + " empleados.");
+    }
+
+    public static void finMostrarDepartamentos () {
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    public static void mostrarNoExistenDepartamentos() {
+        System.out.println("\nNo existen departamentos");
+    }
+
+    // =======================================================
+    //                     CERRAR SESIÓN
+    // =======================================================
+
+    public static boolean preguntaCerrarSesion (String cuenta) {
+        limpiarPantalla();
+
+        String opcion;
+        do {
+            System.out.print("\n¿Está seguro de querer cerrar sesión como ( " + cuenta + " )? (S/N): ");
+            opcion = teclado.nextLine();
+
+            if (opcion.equalsIgnoreCase("N")) {
+                return false;
+            }
+
+            if (!opcion.equalsIgnoreCase("S")) {
+                System.out.println("\nOpcion no válida, vuelva a intentarlo.");
+            }
+
+        } while (!opcion.equalsIgnoreCase("S"));
+        return true;
+    }
+
+    // =======================================================
+    //                     MENÚ EMPLEADO
+    // =======================================================
+
+    public static int menuEmpleado () {
+        limpiarPantalla();
+
+        System.out.println("\n--- MENÚ DE EMPLEADO ---\n");
+        System.out.println("1. Consultar Nómina");
+        System.out.println("2. Registrar Fichaje Diario (Simulado)");
+        System.out.println("3. Cambiar contraseña");
+        System.out.println("4. Cerrar sesión de empleado");
+
+        System.out.print("\nSeleccione una opción: ");
+        return leerEnteroSeguro();
+    }
+
+    // =======================================================
+    //                    Consultar nómina
+    // =======================================================
+
+    public static void mostrarNominaEmpleado (Empleado empleado) {
+        limpiarPantalla();
+
+        System.out.println("\n ----------------------");
+        System.out.println(" --- MOSTRAR NÓMINA ---");
+        System.out.println(" ----------------------\n");
+
+        System.out.print(empleado + " | Tipo de contrato: ");
+        if (empleado instanceof EmpleadoAsalariado empleadoAsalariado) {
+            System.out.println("ASALARIADO");
+        } else if (empleado instanceof EmpleadoPorHoras empleadoPorHoras) {
+            System.out.println("POR HORAS");
+        } else if (empleado instanceof EmpleadoComisionista empleadoComisionista) {
+            System.out.println("COMISIONISTA");
+        } else {
+            System.out.println("No se conoce el tipo de contrato.");
+        }
+        System.out.println("\nNómina (Salario Bruto Mensual): " + empleado.calcularSalarioBruto() + "€");
+
+        System.out.print("Desglose: ");
+
+        if (empleado instanceof EmpleadoAsalariado empleadoAsalariado) {
+            System.out.println("( Salario Base Mensual = " + empleadoAsalariado.getSalarioBaseMensual() + "€ ) + ( Complemento Puesto = " + empleadoAsalariado.getComplementoPuesto() + "€ )");
+        } else if (empleado instanceof EmpleadoPorHoras empleadoPorHoras) {
+            System.out.println("( Horas trabajadas = " + empleadoPorHoras.getHorasTrabajadas() + " ) * ( Precio por hora = " + empleadoPorHoras.getPrecioHora() + "€ )");
+        } else if (empleado instanceof EmpleadoComisionista empleadoComisionista) {
+            System.out.println("( Salario Mínimo Garantizado = " + empleadoComisionista.getSalarioMinimoGarantizado() + "€ ) + [ ( Ventas Realizadas = " + empleadoComisionista.getVentasRealizadas() + "€ ) * ( Porcentaje Comisión = " + empleadoComisionista.getPorcentajeComision()*100 + "% ) ]");
+        } else {
+            System.out.println("No se conoce el desglose de la nómina.");
+        }
+
+        System.out.print("\nPresione INTRO para volver al menú anterior...");
+        teclado.nextLine();
+    }
+
+    // =======================================================
+    //                    Cambiar contraseña
+    // =======================================================
+
+
 
 
 

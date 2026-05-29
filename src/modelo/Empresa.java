@@ -1,6 +1,4 @@
-package controlador;
-
-import modelo.*;
+package modelo;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,11 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.time.LocalDate;
 
-public class GestionEmpresa {
+public class Empresa {
     private List<Empleado> listaEmpleados;
     private HashMap<String, String> departamentos; // Clave: Código (DEV), Valor: Nombre (Desarrollo)
 
-    public GestionEmpresa() {
+    public Empresa() {
         this.listaEmpleados = new ArrayList<>();
         this.departamentos = new HashMap<>();
 
@@ -301,21 +299,16 @@ public class GestionEmpresa {
     }
 
     // CASO DE USO: Eliminar Empleado por ID
-    public boolean eliminarEmpleado(String id) {
-        for (int i = 0; i < listaEmpleados.size(); i++) {
-            if (listaEmpleados.get(i).getId().equalsIgnoreCase(id)) {
-                listaEmpleados.remove(i);
-                return true;
-            }
+    public Empleado eliminarEmpleado(String id) {
+        Empleado empleadoEliminado = buscarPorId(id);
+        if (empleadoEliminado != null) {
+            listaEmpleados.remove(empleadoEliminado);
+            return empleadoEliminado;
+        } else {
+            return null;
         }
-        return false;
     }
 
-    // CASO DE USO: Mostrar los departamentos mapeados
-    public void mostrarDepartamentos() {
-        System.out.println("\n--- LISTA DE DEPARTAMENTOS ---");
-        departamentos.forEach( (codigo, nombre) -> { System.out.println("• Código: [" + codigo + "] -> Área: " + nombre); } );
-    }
 
 
     // CASO DE USO: Añadir Empleado

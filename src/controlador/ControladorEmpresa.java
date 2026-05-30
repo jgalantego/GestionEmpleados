@@ -4,13 +4,13 @@ import modelo.*;
 import vista.VistaConsola;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+
 
 public class ControladorEmpresa {
     private final Empresa empresa;
     private final Autenticador autenticador;
-    private static final Scanner teclado = new Scanner(System.in);
 
     public ControladorEmpresa(Empresa empresa, Autenticador autenticador) {
         this.empresa = empresa;
@@ -18,7 +18,7 @@ public class ControladorEmpresa {
     }
 
     public void menuPrincipal () {
-        int perfil = 0;
+        int perfil;
 
         do {
             perfil = VistaConsola.menuPrincipal();
@@ -52,9 +52,9 @@ public class ControladorEmpresa {
     //          MENÚ DEL ADMINISTRADOR
     // ==========================================
     private void menuAdministrador() {
-        int opcion = -1;
+        int opcion;
 
-        List<Empleado> empleados = new ArrayList<>();
+        List<Empleado> empleados;
         HashMap<String, String> departamentos = empresa.obtenerDepartamentos();
 
         do {
@@ -130,7 +130,8 @@ public class ControladorEmpresa {
                         switch (opcionGastos) {
                             case 1:
                                 // CASO DE USO: Calcular gastos de empleados
-                                calcularGastoTotalEmpleados();
+                                double gastoTotalEmpresa = calcularGastoTotalEmpleados();
+                                VistaConsola.mostrarGastoTotalEmpresa(gastoTotalEmpresa);
                                 break;
                             case 2:
                                 // CASO DE USO: Calcular gasto de empleado
@@ -168,12 +169,10 @@ public class ControladorEmpresa {
                     calcularEmpleadosPorDepartamento(departamentos, empleados);
                     break;
                 case 8:
-                    if (VistaConsola.preguntaCerrarSesion("admin")) {
-                        break;
-                    } else {
+                    if (!VistaConsola.preguntaCerrarSesion("admin")) {
                         opcion = -1;
-                        break;
                     }
+                    break;
                 default:
                     VistaConsola.mensajeOpcionNoValidaMenu(1, 8);
             }
@@ -185,7 +184,7 @@ public class ControladorEmpresa {
     // ==========================================
 
     private void menuEmpleado(Empleado empleado) {
-        int opcion = -1;
+        int opcion;
         do {
             opcion = VistaConsola.menuEmpleado();
 
@@ -208,7 +207,7 @@ public class ControladorEmpresa {
                     }
                     break;
                 default:
-                    System.out.println("Opción no válida. Introduzca un número 1-3.");
+                    VistaConsola.mensajeOpcionNoValidaMenu(1, 3);
             }
         } while (opcion != 4);
     }
@@ -220,8 +219,8 @@ public class ControladorEmpresa {
     // Búsquedas ----------------------------------------------------------------------------
 
     private void buscarPorId () {
-        String dniBuscado = VistaConsola.buscarEmpleadoPor("ID");
-        Empleado empleado = empresa.buscarPorId(dniBuscado);
+        String idBuscado = VistaConsola.buscarEmpleadoPor("ID");
+        Empleado empleado = empresa.buscarPorId(idBuscado);
         VistaConsola.mostrarEmpleadoEncontradoPor(empleado, "ID");
     }
 
@@ -260,16 +259,21 @@ public class ControladorEmpresa {
     private void calcularGastoEmpleado() {
         String id = VistaConsola.buscarEmpleadoPor("ID");
         Empleado empleado = empresa.buscarPorId(id);
-        VistaConsola.mostrarGastoEmpleado(empleado);
+        if (empleado != null) {
+            VistaConsola.mostrarGastoEmpleado(empleado);
+        } else {
+            VistaConsola.mensajeNoExisteEmpleado("ID");
+        }
+
     }
 
-    private void calcularGastoTotalEmpleados() {
+    private double calcularGastoTotalEmpleados() {
         double gastoTotalEmpresa = 0.0;
         List<Empleado> empleados = empresa.obtenerEmpleados();
         for (Empleado empleado : empleados) {
             gastoTotalEmpresa += empleado.calcularCosteTotalEmpresa();
         }
-        VistaConsola.mostrarGastoTotalEmpresa(gastoTotalEmpresa);
+        return gastoTotalEmpresa;
     }
 
     private void calcularGastosDepartamento(HashMap<String, String> departamentos) {
@@ -295,7 +299,7 @@ public class ControladorEmpresa {
         if (empleado != null) {
             VistaConsola.mostrarTipoEmpleadoEncontrado(empleado);
 
-            int opcion = -1;
+            int opcion;
             do {
                 opcion = VistaConsola.mostrarCamposEmpleado(empleado);
 
@@ -304,7 +308,7 @@ public class ControladorEmpresa {
                         break;
                     case 1:
                         String nuevoId = VistaConsola.pedirNuevoCampoString("ID");
-                        if (empresa.modificarIdEmpleado(empleado.getId(), nuevoId))
+                        if (modificarIdEmpleado(empleado.getId(), nuevoId))
                             VistaConsola.mostrarCampoModificado("ID", nuevoId);
                         break;
                     case 2:
@@ -340,7 +344,7 @@ public class ControladorEmpresa {
                     case 8:
                         boolean bandera = false;
                         do {
-                            double nuevoDesempenio = VistaConsola.pedirNuevoCampoDouble("DESEMPEÑO");
+                            double nuevoDesempenio = VistaConsola.pedirNuevoCampoDouble("DESEMPEÑO (0-10)");
                             if (nuevoDesempenio >= 0 && nuevoDesempenio <= 10) {
                                 empleado.registrarEvaluacion(nuevoDesempenio);
                                 VistaConsola.mostrarCampoModificado("DESEMPEÑO", String.valueOf(nuevoDesempenio));
@@ -400,7 +404,26 @@ public class ControladorEmpresa {
                 }
             } while (opcion != 0);
         } else {
-            VistaConsola.mostrarEmpleadoEncontradoPor(null,"ID");
+            VistaConsola.mensajeNoExisteEmpleado("ID");
+        }
+    }
+
+    private boolean modificarIdEmpleado(String idActual, String nuevoId) {
+        List<Empleado> empleados = empresa.obtenerEmpleados();
+        for (Empleado empleado : empleados) {
+            if (empleado.getId().equalsIgnoreCase(nuevoId)) {
+                VistaConsola.mensajeIdEmpleadoRepetidoModificar();
+                return false;
+            }
+        }
+
+        Empleado empleado = empresa.buscarPorId(idActual);
+        if (empleado != null) {
+            empleado.setId(nuevoId);
+            return true;
+        } else {
+            VistaConsola.mensajeNoExisteEmpleado("ID");
+            return false;
         }
     }
 
@@ -432,92 +455,99 @@ public class ControladorEmpresa {
     }
 
     private void formularioAltaEmpleado() {
-        System.out.println("\n--- FORMULARIO DE ALTA EMLPEADO ---");
-        System.out.print("ID Único (ej: E101): ");
-        String id = teclado.nextLine();
-        System.out.print("DNI/NIE: ");
-        String dni = teclado.nextLine();
-        System.out.print("Nombre: ");
-        String nombre = teclado.nextLine();
-        System.out.print("Apellidos: ");
-        String apellidos = teclado.nextLine();
-        System.out.print("Email Corporativo: ");
-        String email = teclado.nextLine();
-        System.out.print("Código de Departamento (DEV, SYS, MK, SALES, HR): ");
-        String dept = teclado.nextLine().toUpperCase();
-        System.out.print("Contraseña: ");
-        String password = teclado.nextLine();
+        VistaConsola.menuAnadirEmpleado();
 
-        System.out.println("Seleccione Tipo de Contrato:");
-        System.out.println("1. Asalariado");
-        System.out.println("2. Por Horas");
-        System.out.println("3. Comisionista");
-        System.out.print("Seleccione una opción: ");
-        int tipo = leerEnteroSeguro();
+        String id;
+        boolean repetido;
+        do {
+            id = VistaConsola.pedirIdEmpleado();
+
+            if (empresa.buscarPorId(id) != null) {
+                VistaConsola.mensajeIdEmpleadoRepetidoAnadir();
+                repetido = true;
+            } else {
+                repetido = false;
+            }
+        } while (repetido);
+
+        String dni = VistaConsola.pedirDNIEmpleado();
+        String nombre = VistaConsola.pedirNombreEmpleado();
+        String apellidos = VistaConsola.pedirApellidosEmpleado();
+        String email = VistaConsola.pedirEmailEmpleado();
+        String dept = VistaConsola.pedirDepartamentoEmpleado();
+        String password = VistaConsola.pedirContraseniaEmpleado();
+
+        int tipo;
+        do {
+            tipo = VistaConsola.menuSeleccionContrato();
+            if (tipo != 1 && tipo != 2 && tipo != 3) {
+                VistaConsola.mensajeOpcionNoValidaMenu(1, 3);
+            }
+        } while (tipo != 1 && tipo != 2 && tipo != 3);
+
+        Empleado empleadoAnadido;
 
         try {
             switch (tipo) {
                 case 1: // ASALARIADO
-                    System.out.print("Salario Base Mensual (€): ");
-                    double base = leerDoubleSeguro();
-                    System.out.print("Complemento de Puesto (€): ");
-                    double complemento = leerDoubleSeguro();
+                    double base = VistaConsola.pedirSalarioBaseEmpleado();
+                    double complemento = VistaConsola.pedirComplementoPuestoEmpleado();
+                    empleadoAnadido = empresa.agregarEmpleadoAsalariado(id, dni, nombre, apellidos, email, dept, password, base, complemento);
 
-                    empresa.agregarEmpleadoAsalariado(id, dni, nombre, apellidos, email, dept, password, base, complemento);
-
-                    System.out.println("Empleado Asalariado añadido.");
+                    VistaConsola.mostrarEmpleadoAnadido(empleadoAnadido, "ASALARIADO");
                     break;
 
                 case 2: // POR HORAS
-                    System.out.print("Precio de la hora (€): ");
-                    double precioHora = leerDoubleSeguro();
+                    double precioHora = VistaConsola.pedirPrecioHoraEmpleado();
 
-                    System.out.println("¿Desea introducir horas específicas o aplicar el valor por defecto?");
-                    System.out.println("1. Introducir horas manualmente");
-                    System.out.println("2. Usar valor por defecto (160 horas)");
-                    int decisionHoras = leerEnteroSeguro();
+                    int decisionHoras;
+                    do {
+                        decisionHoras = VistaConsola.menuHorasEmpleado();
+                        if (decisionHoras != 1 && decisionHoras != 2) {
+                            VistaConsola.mensajeOpcionNoValidaMenu(1, 2);
+                        }
+                    } while (decisionHoras != 1 && decisionHoras != 2);
 
                     if (decisionHoras == 1) {
-                        System.out.print("Horas trabajadas este mes: ");
-                        int horas = leerEnteroSeguro();
-
-                        empresa.agregarEmpleadoPorHoras(id, dni, nombre, apellidos, email, dept, password, precioHora, horas);
+                        int horas = VistaConsola.pedirHorasTrabajadasEmpleado();
+                        empleadoAnadido = empresa.agregarEmpleadoPorHoras(id, dni, nombre, apellidos, email, dept, password, precioHora, horas);
                     } else {
-                        empresa.agregarEmpleadoPorHoras(id, dni, nombre, apellidos, email, dept, password, precioHora);
+                        empleadoAnadido = empresa.agregarEmpleadoPorHoras(id, dni, nombre, apellidos, email, dept, password, precioHora);
                     }
 
-                    System.out.println("Empleado Por Horas añadido.");
+                    VistaConsola.mostrarEmpleadoAnadido(empleadoAnadido, "POR HORAS");
                     break;
 
                 case 3: // COMISIONISTA
-                    System.out.print("Salario Mínimo Garantizado (€): ");
-                    double minimoGarantizado = leerDoubleSeguro();
-                    System.out.print("Porcentaje de Comisión (ej: 0,10 para un 10%): ");
-                    double porcentaje = leerDoubleSeguro();
+                    double minimoGarantizado = VistaConsola.pedirSalarioMinimoEmpleado();
+                    double porcentaje;
+                    do {
+                        porcentaje = VistaConsola.pedirPorcentajeComisionEmpleado();
+                        if (porcentaje < 0 || porcentaje > 1)
+                            VistaConsola.mensajePorcentajeErroneo();
+                    } while (porcentaje < 0 || porcentaje > 1);
 
-                    System.out.println("¿Desea introducir ventas iniciales acumuladas?");
-                    System.out.println("1. Introducir ventas manualmente");
-                    System.out.println("2. Usar valor por defecto (5000€ en ventas)");
-                    int decisionVentas = leerEnteroSeguro();
+                    int decisionVentas;
+                    do {
+                        decisionVentas = VistaConsola.menuVentasEmpleado();
+                        if (decisionVentas != 1 && decisionVentas != 2)
+                            VistaConsola.mensajeOpcionNoValidaMenu(1, 2);
+                    } while (decisionVentas != 1 && decisionVentas != 2);
+
 
                     if (decisionVentas == 1) {
-                        System.out.print("Monto de ventas acumuladas (€): ");
-                        double ventas = leerDoubleSeguro();
-                        empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje, ventas);
+                        double ventas = VistaConsola.pedirVentasEmpleado();
+                        empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje, ventas);
                     } else {
-                        empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje);
+                        empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje);
                     }
 
-                    System.out.println("Empleado Comisionista añadido.");
-                    break;
-
-                default:
-                    System.out.println("Opción de contrato inválida. No se creó ningún registro.");
+                    VistaConsola.mostrarEmpleadoAnadido(empleadoAnadido, "COMISIONISTA");
                     break;
             }
 
         } catch (IllegalStateException exception) {
-            System.out.println("Fallo en los valores de los campos del empleado. No se creó ningún registro.");
+            VistaConsola.mensajeFalloCrearEmpleado();
         }
     }
 
@@ -537,58 +567,17 @@ public class ControladorEmpresa {
 
     private void cambiarContrasenia (Empleado empleado) {
         String actual, nueva;
-        System.out.println("\n--  CAMBIAR CONTRASEÑA  --");
-        System.out.print("Escriba su contraseña actual: ");
-        actual = teclado.nextLine();
-        System.out.print("Escriba su nueva contraseña: ");
-        nueva = teclado.nextLine();
+        VistaConsola.menuCambiarContrasenia();
+        actual = VistaConsola.pedirContrasenia("contraseña actual");
+        nueva = VistaConsola.pedirContrasenia("nueva contraseña");
 
         if (actual.equals(empleado.getPassword())) {
             empleado.setPassword(nueva);
-            System.out.println("\n    - CONTRASEÑA CAMBIADA -");
+            VistaConsola.mensajeContraseniaCambiada();
         } else if (actual.equals(nueva)) {
-            System.out.println("\nLa nueva contraseña es la misma que la actual. Fallo al cambiar contraseña.");
+            VistaConsola.mensajeMismaContrasenia();
         } else {
-            System.out.println("\nLa contraseña actual es errónea. Fallo al cambiar contraseña.");
-        }
-    }
-
-
-    // ==========================================
-    //          MÉTODOS AUXILIARES
-    // ==========================================
-    private int leerEnteroSeguro() {
-        while (!teclado.hasNextInt()) {
-            System.out.println("Error: Debe introducir un número entero válido.");
-            System.out.print("Inténtelo de nuevo: ");
-            teclado.next();
-        }
-        int numero = teclado.nextInt();
-        teclado.nextLine(); // Limpia el buffer
-        return numero;
-    }
-
-    private double leerDoubleSeguro() {
-        while (!teclado.hasNextDouble()) {
-            System.out.println("Error: Debe introducir un valor numérico decimal válido.");
-            System.out.print("Inténtelo de nuevo: ");
-            teclado.next();
-        }
-        double numero = teclado.nextDouble();
-        teclado.nextLine(); // Limpia el buffer
-        return numero;
-    }
-
-    private LocalDate leerFechaSegura() {
-        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        while (true) {
-            String entrada = teclado.nextLine();
-            try {
-                return LocalDate.parse(entrada, formateador);
-            } catch (java.time.format.DateTimeParseException e) {
-                System.out.println("Error: Formato de fecha incorrecto.");
-                System.out.print("Inténtelo de nuevo (DD/MM/AAAA): ");
-            }
+            VistaConsola.mensajeContraseniaErronea();
         }
     }
 

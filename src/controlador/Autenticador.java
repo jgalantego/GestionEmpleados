@@ -2,68 +2,59 @@ package controlador;
 
 import modelo.Empleado;
 import modelo.Empresa;
-
-import java.util.Scanner;
+import vista.VistaConsola;
 
 public class Autenticador {
     private static final String ADMIN_USER = "admin";
     private static final String ADMIN_PASS = "admin";
 
     Empresa empresa;
-    Scanner teclado;
 
-    public Autenticador (Empresa empresa, Scanner teclado) {
+    public Autenticador (Empresa empresa) {
         this.empresa = empresa;
-        this.teclado = teclado;
     }
 
     public boolean loginAdministrador() {
-        System.out.println("\n   --- LOGIN ADMINISTRADOR ---");
+        VistaConsola.menuLoginAdministrador();
         int intentos = 3;
 
         while (intentos > 0) {
-            System.out.print(" -> Usuario: ");
-            String usuario = teclado.nextLine();
-            System.out.print(" -> Contraseña: ");
-            String password = teclado.nextLine();
+            String usuario = VistaConsola.pedirUsuarioLogin();
+            String password = VistaConsola.pedirContraseniaLogin();
 
             if (ADMIN_USER.equals(usuario) && ADMIN_PASS.equals(password)) {
-                System.out.println("\n     - ACCESO CONCEDIDO -\n");
+                VistaConsola.accesoConcedidoLogin();
                 return true;
             } else {
                 intentos--;
-                System.out.println("Incorrecto. Intentos restantes: " + intentos);
-                System.out.println("----------------------------------------------");
+                VistaConsola.intentosRestantesLogin(intentos);
             }
         }
 
-        System.out.println("\n     - ACCESO BLOQUEADO -\n");
+        VistaConsola.accesoBloqueadoLogin();
         return false;
     }
 
     public Empleado loginEmpleado() {
-        System.out.println("\n     --- LOGIN EMPLEADO ---");
+        VistaConsola.menuLoginEmpleado();
         int intentos = 3;
 
         while (intentos > 0) {
-            System.out.print(" -> ID: ");
-            String id = teclado.nextLine();
-            System.out.print(" -> Contraseña: ");
-            String password = teclado.nextLine();
+            String id = VistaConsola.pedirIdLogin();
+            String password = VistaConsola.pedirContraseniaLogin();
 
             Empleado empleado = empresa.buscarPorId(id);
 
             if (empleado != null && empleado.getPassword().equals(password)) {
-                System.out.println("\n     - ACCESO CONCEDIDO -\n");
+                VistaConsola.accesoConcedidoLogin();
                 return empleado;
             } else {
                 intentos--;
-                System.out.println("Incorrecto. Intentos restantes: " + intentos);
-                System.out.println("----------------------------------------------");
+                VistaConsola.intentosRestantesLogin(intentos);
             }
         }
 
-        System.out.println("\n     - ACCESO BLOQUEADO -\n");
+        VistaConsola.accesoBloqueadoLogin();
         return null;
     }
 }

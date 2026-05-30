@@ -40,6 +40,7 @@ public class VistaConsola {
 
     public static void mensajeOpcionNoValidaMenu(int primeraOpcion, int ultimaOpcion) {
         System.out.println("\nOpción no válida. Introduzca un número entre " + primeraOpcion + " y " + ultimaOpcion + ".");
+        introParaContinuar("\nPresione intro para volver a seleccionar una opción del menú anterior...");
     }
 
     // ==========================================
@@ -90,19 +91,18 @@ public class VistaConsola {
         } else {
             limpiarPantalla();
 
-            System.out.println("========================================================================================================================================================================");
-            System.out.print("                                       ");
+            System.out.println("\n========================================================================================================================================================================");
+            System.out.print("                                                                ");
             System.out.println(titulo);
-            System.out.println("========================================================================================================================================================================");
+            System.out.println("========================================================================================================================================================================\n");
 
             for (Empleado empleado : empleados) {
                 String nombreDepto = departamentos.getOrDefault(empleado.getDepartamento(), "Desconocido");
-                System.out.println(empleado.toString() + " | (" + nombreDepto + ") | Fecha Alta: " + empleado.getFechaAlta()  + " | Desempeño: " + empleado.getDesempenio() + " | Salario Bruto: " + empleado.calcularSalarioBruto() + "€" );
+                System.out.println(empleado + " | (" + nombreDepto + ") | Fecha Alta: " + empleado.getFechaAlta()  + " | Desempeño: " + empleado.getDesempenio() + " | Salario Bruto: " + empleado.calcularSalarioBruto() + "€\n" );
             }
         }
-        System.out.println("========================================================================================================================================================================");
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        System.out.println("\n========================================================================================================================================================================");
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     // =======================================================
@@ -141,8 +141,7 @@ public class VistaConsola {
         } else {
             System.out.println("\nEmpleado encontrado:\n" + empleado);
         }
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     public static void mostrarEmpleadosEncontradosPor (List<Empleado> empleados, String buscadoPor) {
@@ -154,8 +153,13 @@ public class VistaConsola {
                 System.out.println(empleado);
             }
         }
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
+
+    public static void mensajeNoExisteEmpleado (String campo) {
+        System.out.println("\nNo existe ningún empleado con ese " + campo + ".");
+
+        introParaContinuar("\nPresione INTRO para volver al menu anterior...");
     }
 
     // =======================================================
@@ -183,17 +187,14 @@ public class VistaConsola {
 
         System.out.println("\nGasto total de la empresa en empleados: " + gastoTotalEmpresa + "€");
 
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     public static void mostrarGastoEmpleado (Empleado empleado) {
-        if (empleado == null) {
-            System.out.println("\nNo existe ningún empleado con ese ID.");
-        } else {
-            System.out.println("\nEmpleado encontrado:\n" + empleado);
-            System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpresa());
-        }
+        System.out.println("\nEmpleado encontrado:\n" + empleado);
+        System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpresa());
+
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     public static String preguntarDepartamento() {
@@ -206,15 +207,13 @@ public class VistaConsola {
     public static void mostrarNoExisteDepartamento() {
         System.out.println("\nNo existe el departamento buscado.");
 
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     public static void mostrarGastoDepartamento(String departamento, double gastoDepartamento) {
         System.out.println("\nLos gastos del departamento (" + departamento + ") son: " + gastoDepartamento );
 
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     // =======================================================
@@ -234,11 +233,22 @@ public class VistaConsola {
         return teclado.nextLine();
     }
 
+    public static void mensajeIdEmpleadoRepetidoModificar() {
+        System.out.println("\nNo es posible modificar el Id porque ya está repetido.");
+
+        introParaContinuar("\nPresione INTRO para volver a la selección de campos...");
+        limpiarPantalla();
+    }
+
+    public static void mensajeIdEmpleadoModificado (String nuevoId) {
+        System.out.println("\nEl Id del empleado ha sio modificado a [" + nuevoId + "]");
+    }
+
     public static void mostrarTipoEmpleadoEncontrado (Empleado empleado) {
-        System.out.print("Empleado encontrado: " + empleado);
-        if (empleado instanceof EmpleadoAsalariado asalariado) {
+        System.out.print("\nEmpleado encontrado: " + empleado);
+        if (empleado instanceof EmpleadoAsalariado) {
             System.out.println(" ( Empleado ASALARIADO )");
-        } else if (empleado instanceof EmpleadoPorHoras porHoras) {
+        } else if (empleado instanceof EmpleadoPorHoras) {
             System.out.println(" ( Empleado POR HORAS )");
         } else {
             System.out.println(" ( Empleado COMISIONISTA )");
@@ -307,8 +317,9 @@ public class VistaConsola {
     public static void mostrarCampoModificado (String campo, String modificacion) {
         System.out.println("\n  - " + campo + " modificado a [ " + modificacion + " ] -");
 
-        System.out.print("\nPresione INTRO para volver al selector de campos...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al selector de campos...");
+
+        limpiarPantalla();
     }
 
     public static void mensajeDesempenioNoValido () {
@@ -337,8 +348,7 @@ public class VistaConsola {
     public static void mostrarEmpleadoEliminado (Empleado empleadoEliminado) {
         System.out.println("\nEmpleado ( " + empleadoEliminado + " ) eliminado con éxito.");
 
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
 
         limpiarPantalla();
     }
@@ -360,8 +370,7 @@ public class VistaConsola {
     }
 
     public static void finMostrarDepartamentos () {
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     public static void mostrarNoExistenDepartamentos() {
@@ -421,37 +430,247 @@ public class VistaConsola {
         System.out.println(" ----------------------\n");
 
         System.out.print(empleado + " | Tipo de contrato: ");
-        if (empleado instanceof EmpleadoAsalariado empleadoAsalariado) {
-            System.out.println("ASALARIADO");
-        } else if (empleado instanceof EmpleadoPorHoras empleadoPorHoras) {
-            System.out.println("POR HORAS");
-        } else if (empleado instanceof EmpleadoComisionista empleadoComisionista) {
-            System.out.println("COMISIONISTA");
-        } else {
-            System.out.println("No se conoce el tipo de contrato.");
+        switch (empleado) {
+            case EmpleadoAsalariado empleadoAsalariado -> System.out.println("ASALARIADO");
+            case EmpleadoPorHoras empleadoPorHoras -> System.out.println("POR HORAS");
+            case EmpleadoComisionista empleadoComisionista -> System.out.println("COMISIONISTA");
+            case null, default -> System.out.println("No se conoce el tipo de contrato.");
         }
+        assert empleado != null;
         System.out.println("\nNómina (Salario Bruto Mensual): " + empleado.calcularSalarioBruto() + "€");
 
         System.out.print("Desglose: ");
 
-        if (empleado instanceof EmpleadoAsalariado empleadoAsalariado) {
-            System.out.println("( Salario Base Mensual = " + empleadoAsalariado.getSalarioBaseMensual() + "€ ) + ( Complemento Puesto = " + empleadoAsalariado.getComplementoPuesto() + "€ )");
-        } else if (empleado instanceof EmpleadoPorHoras empleadoPorHoras) {
-            System.out.println("( Horas trabajadas = " + empleadoPorHoras.getHorasTrabajadas() + " ) * ( Precio por hora = " + empleadoPorHoras.getPrecioHora() + "€ )");
-        } else if (empleado instanceof EmpleadoComisionista empleadoComisionista) {
-            System.out.println("( Salario Mínimo Garantizado = " + empleadoComisionista.getSalarioMinimoGarantizado() + "€ ) + [ ( Ventas Realizadas = " + empleadoComisionista.getVentasRealizadas() + "€ ) * ( Porcentaje Comisión = " + empleadoComisionista.getPorcentajeComision()*100 + "% ) ]");
-        } else {
-            System.out.println("No se conoce el desglose de la nómina.");
+        switch (empleado) {
+            case EmpleadoAsalariado empleadoAsalariado ->
+                    System.out.println("( Salario Base Mensual = " + empleadoAsalariado.getSalarioBaseMensual() + "€ ) + ( Complemento Puesto = " + empleadoAsalariado.getComplementoPuesto() + "€ )");
+            case EmpleadoPorHoras empleadoPorHoras ->
+                    System.out.println("( Horas trabajadas = " + empleadoPorHoras.getHorasTrabajadas() + " ) * ( Precio por hora = " + empleadoPorHoras.getPrecioHora() + "€ )");
+            case EmpleadoComisionista empleadoComisionista ->
+                    System.out.println("( Salario Mínimo Garantizado = " + empleadoComisionista.getSalarioMinimoGarantizado() + "€ ) + [ ( Ventas Realizadas = " + empleadoComisionista.getVentasRealizadas() + "€ ) * ( Porcentaje Comisión = " + empleadoComisionista.getPorcentajeComision() * 100 + "% ) ]");
+            default -> System.out.println("No se conoce el desglose de la nómina.");
         }
 
-        System.out.print("\nPresione INTRO para volver al menú anterior...");
-        teclado.nextLine();
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
     // =======================================================
     //                    Cambiar contraseña
     // =======================================================
 
+    public static void menuCambiarContrasenia () {
+        limpiarPantalla();
+
+        System.out.println("\n --------------------------");
+        System.out.println(" --- CAMBIAR CONTRASEÑA ---");
+        System.out.println(" --------------------------\n");
+    }
+
+    public static String pedirContrasenia (String tipoContrasenia) {
+        System.out.print("Escriba su " + tipoContrasenia + ": ");
+        return teclado.nextLine();
+    }
+
+    public static void mensajeContraseniaCambiada () {
+        System.out.println("\n - CONTRASEÑA CAMBIADA CON ÉXITO -");
+
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
+
+    public static void mensajeMismaContrasenia () {
+        System.out.println("\nLa nueva contraseña es la misma que la actual. Fallo al cambiar contraseña.");
+
+        introParaContinuar("\nPresione INTRO para volver a introducir contraseñas...");
+    }
+
+    public static void mensajeContraseniaErronea () {
+        System.out.println("\nLa contraseña actual es errónea. Fallo al cambiar contraseña.");
+
+        introParaContinuar("\nPresione INTRO para volver a introducir contraseñas...");
+    }
+
+    // =======================================================
+    //                    AÑADIR EMPLEADO
+    // =======================================================
+
+    public static void menuAnadirEmpleado () {
+        limpiarPantalla();
+
+        System.out.println("\n -----------------------------------");
+        System.out.println(" --- FORMULARIO DE ALTA EMPLEADO ---");
+        System.out.println(" -----------------------------------\n");
+    }
+
+    public static int menuSeleccionContrato () {
+        System.out.println("\n - Seleccione Tipo de Contrato -\n");
+        System.out.println("1. Asalariado");
+        System.out.println("2. Por Horas");
+        System.out.println("3. Comisionista");
+        System.out.print("\nSeleccione una opción: ");
+
+        int opcion = leerEnteroSeguro();
+
+        System.out.println();
+        return opcion;
+    }
+
+    public static String pedirIdEmpleado () {
+        return introducirString("ID Único (ej: E01)");
+    }
+
+    public static void mensajeIdEmpleadoRepetidoAnadir () {
+        System.out.println("\nNo es posible añadir ese Id porque ya está repetido. Pruebe de nuevo.\n");
+    }
+
+    public static String pedirDNIEmpleado () {
+        return introducirString("DNI/NIE");
+    }
+
+    public static String pedirNombreEmpleado () {
+        return introducirString("Nombre");
+    }
+
+    public static String pedirApellidosEmpleado () {
+        return introducirString("Apellidos");
+    }
+
+    public static String pedirEmailEmpleado () {
+        return introducirString("Email corporativo");
+    }
+
+    public static String pedirDepartamentoEmpleado () {
+        return introducirString("Código de Departamento (DEV, SYS, MK, SALES, HR)").toUpperCase();
+    }
+
+    public static String pedirContraseniaEmpleado () {
+        return introducirString("Contraseña");
+    }
+
+    // Asalariado -------------------------------------------------------------------------------
+
+    public static Double pedirSalarioBaseEmpleado () {
+        return introducirDouble("Salario Base Mensual (€)");
+    }
+
+    public static Double pedirComplementoPuestoEmpleado () {
+        return introducirDouble("Complemento de Puesto (€)");
+    }
+
+    // Por horas ------------------------------------------------------------------------------
+
+    public static Double pedirPrecioHoraEmpleado () {
+        return introducirDouble("Precio de la hora (€)");
+    }
+
+    public static int menuHorasEmpleado () {
+        System.out.println("\n¿Desea introducir horas específicas o aplicar el valor por defecto?\n");
+        System.out.println("1. Introducir horas manualmente");
+        System.out.println("2. Usar valor por defecto (160 horas)");
+        System.out.print("\nSeleccione una opción: ");
+
+        int opcion = leerEnteroSeguro();
+
+        System.out.println();
+        return opcion;
+    }
+
+    public static int pedirHorasTrabajadasEmpleado () {
+        return introducirInt("Horas trabajadas este mes: ");
+    }
+
+    // Comisionista -------------------------------------------------------------------------
+
+    public static Double pedirSalarioMinimoEmpleado () {
+        return introducirDouble("Salario Mínimo Garantizado (€)");
+    }
+
+    public static Double pedirPorcentajeComisionEmpleado () {
+        return introducirDouble("Porcentaje de Comisión (ej: 0,10 para un 10%)");
+    }
+
+    public static void mensajePorcentajeErroneo () {
+        System.out.println("\nEl porcentaje ha de estar entre 0 y 1 (ej: 0,15 para un 15%), inténtelo de nuevo.\n");
+    }
+
+    public static int menuVentasEmpleado () {
+        System.out.println("\n¿Desea introducir ventas iniciales acumuladas?\n");
+        System.out.println("1. Introducir ventas manualmente");
+        System.out.println("2. Usar valor por defecto (5000€ en ventas)");
+        System.out.print("\nSeleccione una opción: ");
+
+        int opcion = leerEnteroSeguro();
+
+        System.out.println("\n");
+        return opcion;
+    }
+
+    public static Double pedirVentasEmpleado () {
+        return introducirDouble("Monto de ventas acumuladas (€)");
+    }
+
+    // Mostrar empleado añadido --------------------------------------------------------------
+
+    public static void mostrarEmpleadoAnadido (Empleado empleadoAnadido, String tipoEmpleado) {
+        System.out.println("\nEmpleado " + tipoEmpleado + " añadido con éxito: " + empleadoAnadido);
+
+        introParaContinuar("\nPresione INTRO para volver al menu anterior...");
+    }
+
+    // Fallo en la creación del empleado
+
+    public static void mensajeFalloCrearEmpleado () {
+        System.out.println("\nFallo en los valores de los campos del empleado. No se creó ningún registro.\n");
+    }
+
+    // =======================================================
+    //                      LOGIN ADMIN
+    // =======================================================
+
+    public static void menuLoginAdministrador () {
+        limpiarPantalla();
+
+        System.out.println("\n ---------------------------");
+        System.out.println(" --- LOGIN ADMINISTRADOR ---");
+        System.out.println(" ---------------------------\n");
+    }
+
+    public static String pedirUsuarioLogin () {
+        return introducirString(" -> Usuario");
+    }
+
+    public static String pedirContraseniaLogin () {
+        return introducirString(" -> Contraseña");
+    }
+
+    public static void accesoConcedidoLogin () {
+        System.out.println("\n     - ACCESO CONCEDIDO -\n");
+    }
+
+    public static void accesoBloqueadoLogin () {
+        System.out.println("\n     - ACCESO BLOQUEADO -\n");
+    }
+
+    public static void intentosRestantesLogin (int intentos) {
+        System.out.println("\nIncorrecto. Intentos restantes: " + intentos);
+        System.out.println("----------------------------------------------\n");
+    }
+
+
+    // =======================================================
+    //                     LOGIN EMPLEADO
+    // =======================================================
+
+    public static void menuLoginEmpleado () {
+        limpiarPantalla();
+
+        System.out.println("\n ----------------------");
+        System.out.println(" --- LOGIN EMPLEADO ---");
+        System.out.println(" ----------------------\n");
+    }
+
+    public static String pedirIdLogin () {
+        return introducirString(" -> ID (ej: E01)");
+    }
 
 
 
@@ -486,8 +705,8 @@ public class VistaConsola {
     // ==========================================
     private static int leerEnteroSeguro() {
         while (!teclado.hasNextInt()) {
-            System.out.println("Error: Debe introducir un número entero válido.");
-            System.out.print("Inténtelo de nuevo: ");
+            System.out.println("\nError: Debe introducir un número entero válido.");
+            System.out.print("\nInténtelo de nuevo: ");
             teclado.next();
         }
         int numero = teclado.nextInt();
@@ -497,8 +716,8 @@ public class VistaConsola {
 
     private static double leerDoubleSeguro() {
         while (!teclado.hasNextDouble()) {
-            System.out.println("Error: Debe introducir un valor numérico decimal válido.");
-            System.out.print("Inténtelo de nuevo: ");
+            System.out.println("\nError: Debe introducir un valor numérico decimal válido.");
+            System.out.print("\nInténtelo de nuevo: ");
             teclado.next();
         }
         double numero = teclado.nextDouble();
@@ -513,13 +732,13 @@ public class VistaConsola {
             try {
                 return LocalDate.parse(entrada, formateador);
             } catch (java.time.format.DateTimeParseException e) {
-                System.out.println("Error: Formato de fecha incorrecto.");
-                System.out.print("Inténtelo de nuevo (DD/MM/AAAA): ");
+                System.out.println("\nError: Formato de fecha incorrecto.");
+                System.out.print("\nInténtelo de nuevo (DD/MM/AAAA): ");
             }
         }
     }
 
-    public static void limpiarPantalla() {
+    private static void limpiarPantalla() {
         try {
             String sistemaOperativo = System.getProperty("os.name");
 
@@ -533,6 +752,31 @@ public class VistaConsola {
                 System.out.println();
             }
         }
+    }
+
+    private static int introducirInt (String peticion) {
+        System.out.print(peticion + ": ");
+        return leerEnteroSeguro();
+    }
+
+    private static Double introducirDouble (String peticion) {
+        System.out.print(peticion + ": ");
+        return leerDoubleSeguro();
+    }
+
+    private static String introducirString (String peticion) {
+        System.out.print(peticion + ": ");
+        return teclado.nextLine();
+    }
+
+    private static LocalDate introducirFecha (String peticion) {
+        System.out.print(peticion + ": ");
+        return leerFechaSegura();
+    }
+
+    private static void introParaContinuar (String mensaje) {
+        System.out.println(mensaje);
+        teclado.nextLine();
     }
 
 }

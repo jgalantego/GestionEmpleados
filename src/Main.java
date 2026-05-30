@@ -1,19 +1,15 @@
-import modelo.*;
-import controlador.*;
+import modelo.Empresa;
+import controlador.Autenticador;
+import controlador.ControladorEmpresa;
 
-import java.util.Scanner;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
 
-
-
-
     public static void main(String[] args) {
-        //Eliminar el Scanner
-        Scanner teclado = new Scanner(System.in);
-
         Empresa empresa = new Empresa();
-        Autenticador autenticador = new Autenticador(empresa, teclado);
+        Autenticador autenticador = new Autenticador(empresa);
         ControladorEmpresa controladorEmpresa = new ControladorEmpresa(empresa, autenticador);
 
         controladorEmpresa.menuPrincipal();

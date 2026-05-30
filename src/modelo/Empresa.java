@@ -1,5 +1,7 @@
 package modelo;
 
+import vista.VistaConsola;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
@@ -7,8 +9,8 @@ import java.util.HashMap;
 import java.time.LocalDate;
 
 public class Empresa {
-    private List<Empleado> listaEmpleados;
-    private HashMap<String, String> departamentos; // Clave: Código (DEV), Valor: Nombre (Desarrollo)
+    private final List<Empleado> listaEmpleados;
+    private final HashMap<String, String> departamentos; // Clave: Código (DEV), Valor: Nombre (Desarrollo)
 
     public Empresa() {
         this.listaEmpleados = new ArrayList<>();
@@ -280,24 +282,6 @@ public class Empresa {
         return empleados;
     }
 
-    // CASO DE USO: Modificar empleado
-    public boolean modificarIdEmpleado(String idActual, String nuevoId) {
-        for (Empleado empleado : listaEmpleados) {
-            if (empleado.getId().equals(nuevoId)) {
-                System.out.println("\nNo es posible modificar el Id porque ya está repetido.");
-                return false;
-            }
-        }
-        Empleado empleado = buscarPorId(idActual);
-        if (empleado != null) {
-            empleado.setId(nuevoId);
-            System.out.println("\nEl Id del empleado ha sio modificado a [" + nuevoId + "]");
-            return true;
-        }
-        System.out.println("\nNo es posible modificar el Id porque no existe el empleado.");
-        return false;
-    }
-
     // CASO DE USO: Eliminar Empleado por ID
     public Empleado eliminarEmpleado(String id) {
         Empleado empleadoEliminado = buscarPorId(id);
@@ -308,7 +292,6 @@ public class Empresa {
             return null;
         }
     }
-
 
 
     // CASO DE USO: Añadir Empleado
@@ -326,33 +309,38 @@ public class Empresa {
         listaEmpleados.add(emp);
     }
 
-    public void agregarEmpleadoAsalariado(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double base, double complemento) {
+    public Empleado agregarEmpleadoAsalariado(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double base, double complemento) {
         EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoAsalariado = builder.paraAsalariado(base, complemento).build();
         agregarEmpleado(nuevoAsalariado);
+        return nuevoAsalariado;
     }
 
-    public void agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora, int horas) {
+    public Empleado agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora, int horas) {
         EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoPorHoras = builder.paraPorHoras(precioHora, horas).build();
         agregarEmpleado(nuevoPorHoras);
+        return nuevoPorHoras;
     }
 
-    public void agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora) {
+    public Empleado agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora) {
         EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoPorHoras = builder.paraPorHoras(precioHora).build();
         agregarEmpleado(nuevoPorHoras);
+        return nuevoPorHoras;
     }
 
-    public void agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje, double ventas) {
+    public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje, double ventas) {
         EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje, ventas).build();
         agregarEmpleado(nuevoComisionista);
+        return nuevoComisionista;
     }
 
-    public void agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje) {
+    public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje) {
         EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje).build();
         agregarEmpleado(nuevoComisionista);
+        return nuevoComisionista;
     }
 }

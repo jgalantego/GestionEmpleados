@@ -240,10 +240,6 @@ public class VistaConsola {
         limpiarPantalla();
     }
 
-    public static void mensajeIdEmpleadoModificado (String nuevoId) {
-        System.out.println("\nEl Id del empleado ha sio modificado a [" + nuevoId + "]");
-    }
-
     public static void mostrarTipoEmpleadoEncontrado (Empleado empleado) {
         System.out.print("\nEmpleado encontrado: " + empleado);
         if (empleado instanceof EmpleadoAsalariado) {
@@ -295,23 +291,21 @@ public class VistaConsola {
         }
     }
     public static int pedirNuevoCampoInt(String campo) {
-        System.out.print("\nNuevo " + campo + ": " );
-        return leerEnteroSeguro();
+        return introducirInt("\nNuevo " + campo);
     }
 
     public static double pedirNuevoCampoDouble(String campo) {
-        System.out.print("\nNuevo " + campo + ": " );
-        return leerDoubleSeguro();
+        return introducirDouble("\nNuevo " + campo);
+
     }
 
     public static String pedirNuevoCampoString (String campo) {
-        System.out.print("\nNuevo " + campo + ": " );
-        return teclado.nextLine();
+        return introducirString("\nNuevo " + campo);
+
     }
 
     public static LocalDate pedirNuevoCampoFecha() {
-        System.out.print("\nNueva Fecha Alta (DD/MM/AAAA): ");
-        return leerFechaSegura();
+        return introducirFecha("\nNueva Fecha Alta (DD/MM/AAAA)");
     }
 
     public static void mostrarCampoModificado (String campo, String modificacion) {

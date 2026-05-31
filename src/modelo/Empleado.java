@@ -73,7 +73,7 @@ public abstract class Empleado implements Evaluable {
     private static final double TIPO_ACCIDENTES_ITINERANTE = 0.025; // 2.5% para Comerciales (Riesgo itinerante en carretera)
     private static final double BASE_MAXIMA_COTIZACION = 4720.5;
 
-    public double calcularCosteTotalEmpresa() {
+    public double calcularCosteTotalEmpleado () {
         double tipo_accidentes;
 
         double sueldoBruto = this.calcularSalarioBruto();

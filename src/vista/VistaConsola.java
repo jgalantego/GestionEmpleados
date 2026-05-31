@@ -195,7 +195,7 @@ public class VistaConsola {
 
     public static void mostrarGastoEmpleado (Empleado empleado) {
         System.out.println("\nEmpleado encontrado:\n" + empleado);
-        System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpresa());
+        System.out.println("\nGasto total de empresa para ese empleado: " + empleado.calcularCosteTotalEmpleado());
 
         introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }

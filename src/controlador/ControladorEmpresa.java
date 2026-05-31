@@ -304,7 +304,7 @@ public class ControladorEmpresa {
         double gastoTotalEmpresa = 0.0;
         List<Empleado> empleados = empresa.getEmpleados();
         for (Empleado empleado : empleados) {
-            gastoTotalEmpresa += empleado.calcularCosteTotalEmpresa();
+            gastoTotalEmpresa += empleado.calcularCosteTotalEmpleado();
         }
         return gastoTotalEmpresa;
     }
@@ -318,7 +318,7 @@ public class ControladorEmpresa {
         } else {
             double gastoDepartamento = 0;
             for (Empleado empleado : empleados) {
-                gastoDepartamento += empleado.calcularCosteTotalEmpresa();
+                gastoDepartamento += empleado.calcularCosteTotalEmpleado();
             }
             VistaConsola.mostrarGastoDepartamento(departamentos.get(departamento), gastoDepartamento);
         }

@@ -24,7 +24,7 @@ public class Empresa {
         precargarDatos();
     }
 
-    // CASO DE USO: Carga de datos
+    // CASO DE USO: Precarga de datos
     private void precargarDatos() {
         listaEmpleados.add(new EmpleadoAsalariado("E01", "12345678A", "Samuel", "García", "samuel@empresa.com", LocalDate.of(2024, 1, 15), "DEV", "empleado", 1800.0, 200.0));
         listaEmpleados.add(new EmpleadoPorHoras("E02", "87654321B", "Elena", "Martín", "elena@empresa.com", LocalDate.of(2025, 3, 1), "SYS", "empleado",15.5));
@@ -216,7 +216,7 @@ public class Empresa {
         return listaOrdenada;
     }
 
-    // CASO DE USO: Buscar Empleado por ID
+    // CASO DE USO: Buscar Empleado
     public Empleado getEmpleadoPorId (String id) {
         for (Empleado empleado : listaEmpleados) {
             if (empleado.getId().equalsIgnoreCase(id)) {
@@ -225,7 +225,7 @@ public class Empresa {
         }
         return null;
     }
-    // CASO DE USO: Buscar Empleado por DNI
+    // CASO DE USO: Buscar Empleado
     public Empleado getEmpleadoPorDni (String dni) {
         for (Empleado empleado : listaEmpleados) {
             if (empleado.getDni().equalsIgnoreCase(dni)) {
@@ -234,7 +234,7 @@ public class Empresa {
         }
         return null;
     }
-    // CASO DE USO: Buscar empleados por nombre
+    // CASO DE USO: Buscar empleados
     public List<Empleado> getEmpleadosPorNombre (String nombre) {
         String nombreLower = nombre.toLowerCase();
         List<Empleado> empleados = new ArrayList<>();
@@ -245,7 +245,7 @@ public class Empresa {
         }
         return empleados;
     }
-    // CASO DE USO: Buscar empleados por apellido
+    // CASO DE USO: Buscar empleados
     public List<Empleado> getEmpleadosPorApellido (String apellido) {
         String apellidoLower = apellido.toLowerCase();
         List<Empleado> empleados = new ArrayList<>();
@@ -256,7 +256,7 @@ public class Empresa {
         }
         return empleados;
     }
-    // CASO DE USO: Buscar empleados por email
+    // CASO DE USO: Buscar empleados
     public List<Empleado> getEmpleadosPorEmail (String email) {
         String emailLower = email.toLowerCase();
         List<Empleado> empleados = new ArrayList<>();
@@ -278,7 +278,7 @@ public class Empresa {
         return empleados;
     }
 
-    // CASO DE USO: Eliminar Empleado por ID
+    // CASO DE USO: Eliminar Empleado
     public Empleado eliminarEmpleado(String id) {
         Empleado empleadoEliminado = getEmpleadoPorId(id);
         if (empleadoEliminado != null) {

@@ -207,25 +207,9 @@ public class EmpleadoBuilder {
         return true;
     }
 
-    private boolean validarIntPositivo(int valor, String campo) {
-        if (valor <= 0) {
-            System.out.println("El campo " + campo + " debe ser mayor que cero.");
-            return false;
-        }
-        return true;
-    }
-
     private boolean validarDoublePositivo(double valor, String campo) {
         if (valor <= 0) {
             System.out.println("El campo " + campo + " debe ser mayor que cero.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validarIntNoNegativo(int valor, String campo) {
-        if (valor < 0) {
-            System.out.println("El campo " + campo + " no puede ser negativo.");
             return false;
         }
         return true;

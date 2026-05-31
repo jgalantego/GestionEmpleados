@@ -196,7 +196,7 @@ public class ControladorEmpresa {
                     }
                     break;
                 case 1:
-                    // CASO DE USO: Consultar nómina propia
+                    // CASO DE USO: Consultar nómina
                     VistaConsola.mostrarNominaEmpleado(empleado);
                     break;
                 case 2:
@@ -211,7 +211,7 @@ public class ControladorEmpresa {
                     }
                     break;
                 case 3:
-                    // CASO DE USO: Registrar fichaje diario / Registrar horas
+                    // CASO DE USO: Registrar fichaje diario / Registrar horas trabajadas
                     if (empleado instanceof EmpleadoPorHoras empleadoPorHoras) {
                         int horasARegistrar = VistaConsola.pedirHorasARegistrar();
                         empleadoPorHoras.registrarHoras(horasARegistrar);
@@ -225,6 +225,7 @@ public class ControladorEmpresa {
                     cambiarContrasenia(empleado);
                     break;
                 case 5:
+                    // CASO DE USO: Registrar ventas realizadas
                     if (empleado instanceof EmpleadoComisionista empleadoComisionista) {
                         double ventasARegistrar = VistaConsola.pedirVentasARegistrar();
                         empleadoComisionista.registrarVenta(ventasARegistrar);
@@ -725,14 +726,11 @@ public class ControladorEmpresa {
         }
     }
 
-    // 3. EL MOTOR DE CONTROL: Este método hace todo el trabajo sucio sin duplicar código
-// Recibe el empleado genérico (para poder subirle las infracciones) y sus horarios específicos
+
     private void procesarControlHorario(Empleado empleado, LocalTime entradaEstipulada, LocalTime salidaEstipulada) {
         LocalTime horaActual = LocalTime.now();
 
-        // Decidimos si es Entrada o Salida (Margen de 4 horas desde la entrada oficial)
         boolean esEntrada = horaActual.isBefore(entradaEstipulada.plusHours(4));
-
         if (esEntrada) {
             // REGLA: Más de 15 minutos tarde
             if (horaActual.isAfter(entradaEstipulada.plusMinutes(15))) {
@@ -747,9 +745,10 @@ public class ControladorEmpresa {
                 }
 
                 int restantes = 10 - actuales;
-
                 VistaConsola.mostrarAvisoRetraso(horaActual, restantes);
+
                 if (restantes <= 0) {
+                    empleado.registrarEvaluacion(empleado.getDesempenio() - 1);
                     VistaConsola.mostrarAvisoPenalizacionEvaluacion();
                 }
             } else {

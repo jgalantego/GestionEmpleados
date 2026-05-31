@@ -35,7 +35,6 @@ public abstract class Empleado implements Evaluable {
             this.puntuacionDesempenio = puntuacion;
         }
     }
-
     @Override
     public String obtenerEstadoDesempenio() {
         if (puntuacionDesempenio >= 8) return "Excelente";
@@ -74,7 +73,6 @@ public abstract class Empleado implements Evaluable {
     private static final double TIPO_ACCIDENTES_ITINERANTE = 0.025; // 2.5% para Comerciales (Riesgo itinerante en carretera)
     private static final double BASE_MAXIMA_COTIZACION = 4720.5;
 
-    // CASO DE USO: Calcular Gastos de Empresa por Trabajador
     public double calcularCosteTotalEmpresa() {
         double tipo_accidentes;
 

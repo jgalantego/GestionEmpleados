@@ -770,6 +770,7 @@ public class ControladorEmpresa {
 
                 VistaConsola.mostrarAvisoSalidaAnticipada(horaActual, restantes);
                 if (restantes <= 0) {
+                    empleado.registrarEvaluacion(empleado.getDesempenio() - 1);
                     VistaConsola.mostrarAvisoPenalizacionEvaluacion();
                 }
             } else {

@@ -1,7 +1,5 @@
 package modelo;
 
-import vista.VistaConsola;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
@@ -119,7 +117,7 @@ public class Empresa {
         listaEmpleados.get(3).registrarEvaluacion(8.2);  // Laura
         listaEmpleados.get(4).registrarEvaluacion(6.0);  // David
         listaEmpleados.get(5).registrarEvaluacion(5.5);  // Marta
-        listaEmpleados.get(6).registrarEvaluacion(9.8);  // Alejandro (Top Admin)
+        listaEmpleados.get(6).registrarEvaluacion(9.8);  // Alejandro
         listaEmpleados.get(7).registrarEvaluacion(4.2);  // Sofía
         listaEmpleados.get(8).registrarEvaluacion(7.0);  // Javier
         listaEmpleados.get(9).registrarEvaluacion(6.8);  // Lucía
@@ -195,24 +193,22 @@ public class Empresa {
         listaEmpleados.get(79).registrarEvaluacion(5.9); // Zoe
     }
 
-
-    public HashMap<String, String> obtenerDepartamentos () {
+    // Getters
+    public HashMap<String, String> getDepartamentos () {
         return this.departamentos;
     }
-
-    // CASO DE USO: Obtener la lista de todos los empleados
-    public List<Empleado> obtenerEmpleados() {
+    public List<Empleado> getEmpleados() {
         return this.listaEmpleados;
     }
 
     // CASO DE USO: Obtener lista ordenada de empleados por antiguedad
-    public List<Empleado> obtenerEmpleadosOrdenadosPorAntiguedad() {
+    public List<Empleado> getEmpleadosOrdenadosPorAntiguedad () {
         List<Empleado> listaOrdenada = new ArrayList<>(this.listaEmpleados);
         listaOrdenada.sort(Comparator.comparing(Empleado::getFechaAlta));
         return listaOrdenada;
     }
     // CASO DE USO: Obtener lista ordenada de empleados por desempeño
-    public List<Empleado> obtenerEmpleadosOrdenadosPorDesempenio() {
+    public List<Empleado> getEmpleadosOrdenadosPorDesempenio () {
         List<Empleado> listaOrdenada = new ArrayList<>(this.listaEmpleados);
         listaOrdenada.sort(Comparator.comparing(Empleado::getDesempenio));
         //listaOrdenada.sort((e1, e2) -> Double.compare(e2.getDesempenio(), e1.getDesempenio()));
@@ -220,7 +216,7 @@ public class Empresa {
     }
 
     // CASO DE USO: Buscar Empleado por ID
-    public Empleado buscarPorId(String id) {
+    public Empleado getEmpleadoPorId (String id) {
         for (Empleado empleado : listaEmpleados) {
             if (empleado.getId().equalsIgnoreCase(id)) {
                 return empleado;
@@ -229,7 +225,7 @@ public class Empresa {
         return null;
     }
     // CASO DE USO: Buscar Empleado por DNI
-    public Empleado buscarPorDni(String dni) {
+    public Empleado getEmpleadoPorDni (String dni) {
         for (Empleado empleado : listaEmpleados) {
             if (empleado.getDni().equalsIgnoreCase(dni)) {
                 return empleado;
@@ -238,7 +234,7 @@ public class Empresa {
         return null;
     }
     // CASO DE USO: Buscar empleados por nombre
-    public List<Empleado> buscarPorNombre(String nombre) {
+    public List<Empleado> getEmpleadosPorNombre (String nombre) {
         String nombreLower = nombre.toLowerCase();
         List<Empleado> empleados = new ArrayList<>();
         for (Empleado empleado : listaEmpleados) {
@@ -249,7 +245,7 @@ public class Empresa {
         return empleados;
     }
     // CASO DE USO: Buscar empleados por apellido
-    public List<Empleado> buscarPorApellido(String apellido) {
+    public List<Empleado> getEmpleadosPorApellido (String apellido) {
         String apellidoLower = apellido.toLowerCase();
         List<Empleado> empleados = new ArrayList<>();
         for (Empleado empleado : listaEmpleados) {
@@ -260,7 +256,7 @@ public class Empresa {
         return empleados;
     }
     // CASO DE USO: Buscar empleados por email
-    public List<Empleado> buscarPorEmail(String email) {
+    public List<Empleado> getEmpleadosPorEmail (String email) {
         String emailLower = email.toLowerCase();
         List<Empleado> empleados = new ArrayList<>();
         for (Empleado empleado : listaEmpleados) {
@@ -271,11 +267,10 @@ public class Empresa {
         return empleados;
     }
     // CASO DE USO: Buscar empleados por departamento
-    public List<Empleado> buscarPorDepartamento(String departamento) {
-        String deptLower = departamento.toLowerCase();
+    public List<Empleado> getEmpleadosPorDepartamento (String departamento) {
         List<Empleado> empleados = new ArrayList<>();
         for (Empleado empleado : listaEmpleados) {
-            if (empleado.getDepartamento().toLowerCase().contains(deptLower)) {
+            if (empleado.getDepartamento().contains(departamento.toUpperCase())) {
                 empleados.add(empleado);
             }
         }
@@ -284,7 +279,7 @@ public class Empresa {
 
     // CASO DE USO: Eliminar Empleado por ID
     public Empleado eliminarEmpleado(String id) {
-        Empleado empleadoEliminado = buscarPorId(id);
+        Empleado empleadoEliminado = getEmpleadoPorId(id);
         if (empleadoEliminado != null) {
             listaEmpleados.remove(empleadoEliminado);
             return empleadoEliminado;
@@ -293,9 +288,8 @@ public class Empresa {
         }
     }
 
-
     // CASO DE USO: Añadir Empleado
-    private EmpleadoBuilder crearNuevoEmpleado(String id, String dni, String nombre, String apellidos, String email, String dept, String password) {
+    private EmpleadoBuilder crearNuevoEmpleadoBase(String id, String dni, String nombre, String apellidos, String email, String dept, String password) {
         return new EmpleadoBuilder().setId(id)
                 .setDni(dni)
                 .setNombre(nombre)
@@ -305,42 +299,38 @@ public class Empresa {
                 .setPassword(password);
     }
 
-    private void agregarEmpleado(Empleado emp) {
-        listaEmpleados.add(emp);
-    }
-
     public Empleado agregarEmpleadoAsalariado(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double base, double complemento) {
-        EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoAsalariado = builder.paraAsalariado(base, complemento).build();
-        agregarEmpleado(nuevoAsalariado);
+        listaEmpleados.add(nuevoAsalariado);
         return nuevoAsalariado;
     }
 
     public Empleado agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora, int horas) {
-        EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoPorHoras = builder.paraPorHoras(precioHora, horas).build();
-        agregarEmpleado(nuevoPorHoras);
+        listaEmpleados.add(nuevoPorHoras);
         return nuevoPorHoras;
     }
 
     public Empleado agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora) {
-        EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoPorHoras = builder.paraPorHoras(precioHora).build();
-        agregarEmpleado(nuevoPorHoras);
+        listaEmpleados.add(nuevoPorHoras);
         return nuevoPorHoras;
     }
 
     public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje, double ventas) {
-        EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje, ventas).build();
-        agregarEmpleado(nuevoComisionista);
+        listaEmpleados.add(nuevoComisionista);
         return nuevoComisionista;
     }
 
     public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje) {
-        EmpleadoBuilder builder = crearNuevoEmpleado(id, dni, nombre, apellidos, email, dept, password);
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje).build();
-        agregarEmpleado(nuevoComisionista);
+        listaEmpleados.add(nuevoComisionista);
         return nuevoComisionista;
     }
 }

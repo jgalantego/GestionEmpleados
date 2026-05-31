@@ -399,14 +399,19 @@ public class VistaConsola {
     //                     MENÚ EMPLEADO
     // =======================================================
 
-    public static int menuEmpleado () {
+    public static int menuEmpleado (Empleado empleado) {
         limpiarPantalla();
 
         System.out.println("\n--- MENÚ DE EMPLEADO ---\n");
+        System.out.println("0. Cerrar sesión de empleado");
         System.out.println("1. Consultar Nómina");
         System.out.println("2. Registrar Fichaje Diario (Simulado)");
-        System.out.println("3. Cambiar contraseña");
-        System.out.println("4. Cerrar sesión de empleado");
+        System.out.println("3. Cambiar Contraseña");
+
+        if (empleado instanceof EmpleadoPorHoras)
+            System.out.println("4. Registrar Horas");
+        if (empleado instanceof EmpleadoComisionista)
+            System.out.println("4. Registrar Ventas");
 
         System.out.print("\nSeleccione una opción: ");
         return leerEnteroSeguro();
@@ -665,6 +670,57 @@ public class VistaConsola {
     public static String pedirIdLogin () {
         return introducirString(" -> ID (ej: E01)");
     }
+
+    // =======================================================
+    //         REGISTRAR HORAS (EMPLEADO POR HORAS)
+    // =======================================================
+    public static void menuRegistrarHoras () {
+        limpiarPantalla();
+
+        System.out.println("\n -----------------------");
+        System.out.println(" --- REGISTRAR HORAS ---");
+        System.out.println(" -----------------------\n");
+    }
+
+    public static int pedirHorasARegistrar() {
+        return introducirInt("Introduzca las horas trabajadas hoy");
+    }
+
+    public static void mostrarHorasTrabajadasSumadas (int horasTrabajadas, int horasRegistradas) {
+        System.out.println("\n" + horasRegistradas + " horas registradas --> Horas trabajadas este mes = " + (horasTrabajadas-horasRegistradas) + " + " + horasRegistradas + " = " + horasTrabajadas);
+
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
+
+    // =======================================================
+    //         REGISTRAR HORAS (EMPLEADO POR HORAS)
+    // =======================================================
+    public static void menuRegistrarVentas () {
+        limpiarPantalla();
+
+        System.out.println("\n ------------------------");
+        System.out.println(" --- REGISTRAR VENTAS ---");
+        System.out.println(" ------------------------\n");
+    }
+
+    public static double pedirVentasARegistrar() {
+        return introducirDouble("Introduzca las ventas realizadas hoy (€)");
+    }
+
+    public static void mostrarVentasRealizadasSumadas (double ventasRealizadas, double ventasRegistradas) {
+        System.out.println("\n" + ventasRegistradas + " ventas registradas --> Ventas realizadas este mes = " + (ventasRealizadas-ventasRegistradas) + " + " + ventasRegistradas + " = " + ventasRealizadas);
+
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
+
+    // No se conoce el tipo de empleado --------------------------------------------------------
+
+    public static void mensajeNoSeReconoceTipoEmpleado () {
+        System.out.println("\nNo se reconoce el tipo de empleado.");
+
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
+
 
 
 

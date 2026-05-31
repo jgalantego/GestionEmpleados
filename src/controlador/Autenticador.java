@@ -43,7 +43,7 @@ public class Autenticador {
             String id = VistaConsola.pedirIdLogin();
             String password = VistaConsola.pedirContraseniaLogin();
 
-            Empleado empleado = empresa.buscarPorId(id);
+            Empleado empleado = empresa.getEmpleadoPorId(id);
 
             if (empleado != null && empleado.getPassword().equals(password)) {
                 VistaConsola.accesoConcedidoLogin();

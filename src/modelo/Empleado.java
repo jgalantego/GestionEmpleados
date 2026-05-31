@@ -13,7 +13,6 @@ public abstract class Empleado implements Evaluable {
     protected double puntuacionDesempenio; // Atributo para la interfaz
     private String password;
 
-    // Constructor completo
     public Empleado(String id, String dni, String nombre, String apellidos, String email, LocalDate fechaAlta, String departamento, String password) {
         this.id = id;
         this.dni = dni;
@@ -29,7 +28,7 @@ public abstract class Empleado implements Evaluable {
     // Metodo abstracto
     public abstract double calcularSalarioBruto();
 
-    // Implementación de los métodos de la Interfaz
+    // Métodos de la Interfaz
     @Override
     public void registrarEvaluacion(double puntuacion) {
         if (puntuacion >= 0 && puntuacion <= 10) {
@@ -63,6 +62,7 @@ public abstract class Empleado implements Evaluable {
     public LocalDate getFechaAlta() { return this.fechaAlta; }
     public void setFechaAlta(LocalDate fechaAlta) { this.fechaAlta = fechaAlta; }
 
+    // toString
     @Override
     public String toString() {
         return "[" + id + "] " + apellidos + ", " + nombre + " | DNI: " + dni + " | Email: " + email + " | Dept: " + departamento;

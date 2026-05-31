@@ -19,18 +19,18 @@ public class EmpleadoPorHoras extends Empleado {
         this.horasTrabajadas = horasTrabajadas;
     }
 
-    public void registrarHoras(int horas) {
-        this.horasTrabajadas += horas;
-    }
+    // Getters y setters
+    public int getHorasTrabajadas() { return horasTrabajadas; }
+    public double getPrecioHora() { return precioHora; }
+    public void setHorasTrabajadas(int horasTrabajadas) { this.horasTrabajadas = horasTrabajadas; }
+    public void setPrecioHora(double precioHora) { this.precioHora = precioHora; }
 
     @Override
     public double calcularSalarioBruto() {
         return this.horasTrabajadas * this.precioHora;
     }
 
-    // Getters y setters
-    public int getHorasTrabajadas() { return horasTrabajadas; }
-    public double getPrecioHora() { return precioHora; }
-    public void setHorasTrabajadas(int horasTrabajadas) { this.horasTrabajadas = horasTrabajadas; }
-    public void setPrecioHora(double precioHora) { this.precioHora = precioHora; }
+    public void registrarHoras(int horas) {
+        this.horasTrabajadas += horas;
+    }
 }

@@ -18,15 +18,6 @@ public class EmpleadoComisionista extends Empleado {
         this.ventasRealizadas = ventasRealizadas;
     }
 
-    public void registrarVenta(double monto) {
-        this.ventasRealizadas += monto;
-    }
-
-    @Override
-    public double calcularSalarioBruto() {
-        return this.salarioMinimoGarantizado + (this.ventasRealizadas * this.porcentajeComision);
-    }
-
     //Getters y setters
     public double getSalarioMinimoGarantizado() { return salarioMinimoGarantizado; }
     public double getVentasRealizadas() { return ventasRealizadas; }
@@ -34,4 +25,13 @@ public class EmpleadoComisionista extends Empleado {
     public void setSalarioMinimoGarantizado(double salarioMinimoGarantizado) { this.salarioMinimoGarantizado = salarioMinimoGarantizado; }
     public void setVentasRealizadas(double ventasRealizadas) { this.ventasRealizadas = ventasRealizadas; }
     public void setPorcentajeComision(double porcentajeComision) { this.porcentajeComision = porcentajeComision; }
+
+    @Override
+    public double calcularSalarioBruto() {
+        return this.salarioMinimoGarantizado + (this.ventasRealizadas * this.porcentajeComision);
+    }
+
+    public void registrarVenta(double monto) {
+        this.ventasRealizadas += monto;
+    }
 }

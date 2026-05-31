@@ -55,7 +55,7 @@ public class ControladorEmpresa {
         int opcion;
 
         List<Empleado> empleados;
-        HashMap<String, String> departamentos = empresa.obtenerDepartamentos();
+        HashMap<String, String> departamentos = empresa.getDepartamentos();
 
         do {
             opcion = VistaConsola.menuAdministrador();
@@ -70,19 +70,18 @@ public class ControladorEmpresa {
                         switch (opcionMostrar) {
                             case 1:
                                 //CASO DE USO: Mostrar todos los empleados
-                                empleados = empresa.obtenerEmpleados();
+                                empleados = empresa.getEmpleados();
                                 VistaConsola.mostrarListaEmpleados("LISTA DE TODOS LOS EMPLEADOS", empleados, departamentos);
                                 break;
                             case 2:
-                                empleados = empresa.obtenerEmpleadosOrdenadosPorAntiguedad();
+                                empleados = empresa.getEmpleadosOrdenadosPorAntiguedad();
                                 VistaConsola.mostrarListaEmpleados("LISTA DE EMPLEADOS ORDENADOS POR ANTIGUEDAD", empleados, departamentos);
                                 break;
                             case 3:
-                                empleados = empresa.obtenerEmpleadosOrdenadosPorDesempenio();
+                                empleados = empresa.getEmpleadosOrdenadosPorDesempenio();
                                 VistaConsola.mostrarListaEmpleados("LISTA DE EMPLEADOS ORDENADOS POR DESEMPEÑO", empleados, departamentos);
                                 break;
                             case 4:
-                                // Volver al menu administración
                                 break;
                             default:
                                 VistaConsola.mensajeOpcionNoValidaMenu(1, 4);
@@ -165,7 +164,7 @@ public class ControladorEmpresa {
                 case 7:
                     // CASO DE USO: Mostrar departamentos (HashMap)
                     VistaConsola.menuMostrarDepartamentos();
-                    empleados = empresa.obtenerEmpleados();
+                    empleados = empresa.getEmpleados();
                     calcularEmpleadosPorDepartamento(departamentos, empleados);
                     break;
                 case 8:
@@ -186,9 +185,15 @@ public class ControladorEmpresa {
     private void menuEmpleado(Empleado empleado) {
         int opcion;
         do {
-            opcion = VistaConsola.menuEmpleado();
+            opcion = VistaConsola.menuEmpleado(empleado);
 
             switch (opcion) {
+
+                case 0:
+                    if (!VistaConsola.preguntaCerrarSesion("empleado")) {
+                        opcion = -1;
+                    }
+                    break;
                 case 1:
                     // CASO DE USO: Consultar nómina propia
                     VistaConsola.mostrarNominaEmpleado(empleado);
@@ -202,14 +207,30 @@ public class ControladorEmpresa {
                     cambiarContrasenia(empleado);
                     break;
                 case 4:
-                    if (!VistaConsola.preguntaCerrarSesion("empleado")) {
-                        opcion = -1;
+                    switch (empleado) {
+                        case EmpleadoAsalariado empleadoAsalariado -> VistaConsola.mensajeOpcionNoValidaMenu(0, 3);
+                        case EmpleadoPorHoras empleadoPorHoras -> { // CASO DE USO: Registrar horas
+                            int horasARegistrar = VistaConsola.pedirHorasARegistrar();
+                            empleadoPorHoras.registrarHoras(horasARegistrar);
+                            VistaConsola.mostrarHorasTrabajadasSumadas(empleadoPorHoras.getHorasTrabajadas(), horasARegistrar);
+                        }
+                        case EmpleadoComisionista empleadoComisionista -> { // CASO DE USO: Registrar ventas
+                            double ventasARegistrar = VistaConsola.pedirVentasARegistrar();
+                            empleadoComisionista.registrarVenta(ventasARegistrar);
+                            VistaConsola.mostrarVentasRealizadasSumadas(empleadoComisionista.getVentasRealizadas(), ventasARegistrar);
+                        }
+                        case null, default -> VistaConsola.mensajeNoSeReconoceTipoEmpleado();
                     }
                     break;
                 default:
-                    VistaConsola.mensajeOpcionNoValidaMenu(1, 3);
+                    if (empleado instanceof EmpleadoAsalariado) {
+                        VistaConsola.mensajeOpcionNoValidaMenu(0, 3);
+                    } else {
+                        VistaConsola.mensajeOpcionNoValidaMenu(0, 4);
+                    }
+                    break;
             }
-        } while (opcion != 4);
+        } while (opcion != 0);
     }
 
     // ==========================================
@@ -220,37 +241,37 @@ public class ControladorEmpresa {
 
     private void buscarPorId () {
         String idBuscado = VistaConsola.buscarEmpleadoPor("ID");
-        Empleado empleado = empresa.buscarPorId(idBuscado);
+        Empleado empleado = empresa.getEmpleadoPorId(idBuscado);
         VistaConsola.mostrarEmpleadoEncontradoPor(empleado, "ID");
     }
 
     private void buscarPorDNI () {
         String dniBuscado = VistaConsola.buscarEmpleadoPor("DNI");
-        Empleado empleado = empresa.buscarPorDni(dniBuscado);
+        Empleado empleado = empresa.getEmpleadoPorDni(dniBuscado);
         VistaConsola.mostrarEmpleadoEncontradoPor(empleado, "DNI");
     }
 
     private void buscarPorNombre () {
         String nombre = VistaConsola.buscarEmpleadoPor("NOMBRE");
-        List<Empleado> empleados = empresa.buscarPorNombre(nombre);
+        List<Empleado> empleados = empresa.getEmpleadosPorNombre(nombre);
         VistaConsola.mostrarEmpleadosEncontradosPor(empleados, "NOMBRE");
     }
 
     private void buscarPorApellido () {
         String apellido = VistaConsola.buscarEmpleadoPor("APELLIDO");
-        List<Empleado> empleados = empresa.buscarPorApellido(apellido);
+        List<Empleado> empleados = empresa.getEmpleadosPorApellido(apellido);
         VistaConsola.mostrarEmpleadosEncontradosPor(empleados, "APELLIDO");
     }
 
     private void buscarPorEmail () {
         String email = VistaConsola.buscarEmpleadoPor("EMAIL");
-        List<Empleado> empleados = empresa.buscarPorEmail(email);
+        List<Empleado> empleados = empresa.getEmpleadosPorEmail(email);
         VistaConsola.mostrarEmpleadosEncontradosPor(empleados, "EMAIL");
     }
 
     private void buscarPorDepartamento () {
         String departamento = VistaConsola.buscarEmpleadoPor("DEPARTAMENTO (abreviatura)");
-        List<Empleado> empleados = empresa.buscarPorDepartamento(departamento);
+        List<Empleado> empleados = empresa.getEmpleadosPorDepartamento(departamento);
         VistaConsola.mostrarEmpleadosEncontradosPor(empleados, "DEPARTAMENTO");
     }
 
@@ -258,7 +279,7 @@ public class ControladorEmpresa {
 
     private void calcularGastoEmpleado() {
         String id = VistaConsola.buscarEmpleadoPor("ID");
-        Empleado empleado = empresa.buscarPorId(id);
+        Empleado empleado = empresa.getEmpleadoPorId(id);
         if (empleado != null) {
             VistaConsola.mostrarGastoEmpleado(empleado);
         } else {
@@ -269,7 +290,7 @@ public class ControladorEmpresa {
 
     private double calcularGastoTotalEmpleados() {
         double gastoTotalEmpresa = 0.0;
-        List<Empleado> empleados = empresa.obtenerEmpleados();
+        List<Empleado> empleados = empresa.getEmpleados();
         for (Empleado empleado : empleados) {
             gastoTotalEmpresa += empleado.calcularCosteTotalEmpresa();
         }
@@ -279,7 +300,7 @@ public class ControladorEmpresa {
     private void calcularGastosDepartamento(HashMap<String, String> departamentos) {
         String departamento = VistaConsola.preguntarDepartamento();
 
-        List<Empleado> empleados = empresa.buscarPorDepartamento(departamento);
+        List<Empleado> empleados = empresa.getEmpleadosPorDepartamento(departamento);
         if (empleados.isEmpty()) {
             VistaConsola.mostrarNoExisteDepartamento();
         } else {
@@ -295,7 +316,7 @@ public class ControladorEmpresa {
 
     private void modificarEmpleado() {
         String id = VistaConsola.pedirIdEmpleadoAModificar();
-        Empleado empleado = empresa.buscarPorId(id);
+        Empleado empleado = empresa.getEmpleadoPorId(id);
         if (empleado != null) {
             VistaConsola.mostrarTipoEmpleadoEncontrado(empleado);
 
@@ -355,17 +376,17 @@ public class ControladorEmpresa {
                         } while (!bandera);
                         break;
                     case 9:
-                        if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
+                        if (empleado instanceof EmpleadoAsalariado asalariado) {
                             double nuevoSalarioBase = VistaConsola.pedirNuevoCampoDouble("SALARIO BASE MENSUAL");
                             asalariado.setSalarioBaseMensual(nuevoSalarioBase);
                             VistaConsola.mostrarCampoModificado("SALARIO BASE MENSUAL", String.valueOf(nuevoSalarioBase));
 
-                        } else if (empleado instanceof EmpleadoPorHoras porHoras) { // Es por horas
+                        } else if (empleado instanceof EmpleadoPorHoras porHoras) {
                             int nuevasHoras = VistaConsola.pedirNuevoCampoInt("HORAS TRABAJADAS");
                             porHoras.setHorasTrabajadas(nuevasHoras);
                             VistaConsola.mostrarCampoModificado("HORAS TRABAJADAS", String.valueOf(nuevasHoras));
 
-                        } else { // Es comisionista
+                        } else {
                             double nuevoSalarioMinimo = VistaConsola.pedirNuevoCampoDouble("SALARIO MÍNIMO GARANTIZADO");
                             ((EmpleadoComisionista) empleado).setSalarioMinimoGarantizado(nuevoSalarioMinimo);
                             VistaConsola.mostrarCampoModificado("SALARIO MÍNIMO GARANTIZADO", String.valueOf(nuevoSalarioMinimo));
@@ -373,17 +394,17 @@ public class ControladorEmpresa {
                         }
                         break;
                     case 10:
-                        if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
+                        if (empleado instanceof EmpleadoAsalariado asalariado) {
                             double nuevoComplemento = VistaConsola.pedirNuevoCampoDouble("COMPLEMENTO PUESTO");
                             asalariado.setComplementoPuesto(nuevoComplemento);
                             VistaConsola.mostrarCampoModificado("COMPLEMENTO PUESTO", String.valueOf(nuevoComplemento));
 
-                        } else if (empleado instanceof EmpleadoPorHoras porHoras) { // Es por horas
+                        } else if (empleado instanceof EmpleadoPorHoras porHoras) {
                             int nuevoPrecioHora = VistaConsola.pedirNuevoCampoInt("PRECIO POR HORA");
                             porHoras.setPrecioHora(nuevoPrecioHora);
                             VistaConsola.mostrarCampoModificado("PRECIO POR HORA", String.valueOf(nuevoPrecioHora));
 
-                        } else { // Es comisionista
+                        } else {
                             double nuevasVentas = VistaConsola.pedirNuevoCampoDouble("VENTAS REALIZADAS");
                             ((EmpleadoComisionista) empleado).setVentasRealizadas(nuevasVentas);
                             VistaConsola.mostrarCampoModificado("VENTAS REALIZADAS", String.valueOf(nuevasVentas));
@@ -409,7 +430,7 @@ public class ControladorEmpresa {
     }
 
     private boolean modificarIdEmpleado(String idActual, String nuevoId) {
-        List<Empleado> empleados = empresa.obtenerEmpleados();
+        List<Empleado> empleados = empresa.getEmpleados();
         for (Empleado empleado : empleados) {
             if (empleado.getId().equalsIgnoreCase(nuevoId)) {
                 VistaConsola.mensajeIdEmpleadoRepetidoModificar();
@@ -417,7 +438,7 @@ public class ControladorEmpresa {
             }
         }
 
-        Empleado empleado = empresa.buscarPorId(idActual);
+        Empleado empleado = empresa.getEmpleadoPorId(idActual);
         if (empleado != null) {
             empleado.setId(nuevoId);
             return true;
@@ -462,7 +483,7 @@ public class ControladorEmpresa {
         do {
             id = VistaConsola.pedirIdEmpleado();
 
-            if (empresa.buscarPorId(id) != null) {
+            if (empresa.getEmpleadoPorId(id) != null) {
                 VistaConsola.mensajeIdEmpleadoRepetidoAnadir();
                 repetido = true;
             } else {

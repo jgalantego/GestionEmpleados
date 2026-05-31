@@ -12,14 +12,14 @@ public class EmpleadoAsalariado extends Empleado {
         this.complementoPuesto = complementoPuesto;
     }
 
-    @Override
-    public double calcularSalarioBruto() {
-        return this.salarioBaseMensual + this.complementoPuesto;
-    }
-
     //Getters y setters
     public double getSalarioBaseMensual() { return this.salarioBaseMensual; }
     public void setSalarioBaseMensual (double salarioBaseMensual) { this.salarioBaseMensual = salarioBaseMensual; }
     public double getComplementoPuesto() { return this.complementoPuesto; }
     public void setComplementoPuesto (double complementoPuesto) { this.complementoPuesto = complementoPuesto; }
+
+    @Override
+    public double calcularSalarioBruto() {
+        return this.salarioBaseMensual + this.complementoPuesto;
+    }
 }

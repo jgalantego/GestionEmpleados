@@ -318,11 +318,10 @@ public class VistaConsola {
     }
 
     public static void mostrarCampoModificado (String campo, String modificacion) {
-        System.out.println("\n  - " + campo + " modificado a [ " + modificacion + " ] -");
-
-        introParaContinuar("\nPresione INTRO para volver al selector de campos...");
-
         limpiarPantalla();
+
+        System.out.println("\n  - " + campo + " modificado a [ " + modificacion + " ] -");
+        introParaContinuar("\nPresione INTRO para volver al selector de campos...");
     }
 
     public static void mostrarHoraModificada (String campo, LocalTime horaModificada) {

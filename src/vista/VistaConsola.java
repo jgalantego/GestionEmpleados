@@ -5,7 +5,9 @@ import modelo.EmpleadoAsalariado;
 import modelo.EmpleadoComisionista;
 import modelo.EmpleadoPorHoras;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Scanner;
 
 public class VistaConsola {
     public static final Scanner teclado = new Scanner(System.in);
+    private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("HH:mm");
 
     // =======================================================
     //          MENÚ PRINCIPAL DE LA APLICACIÓN
@@ -267,6 +270,8 @@ public class VistaConsola {
         if (empleado instanceof EmpleadoAsalariado asalariado) { // Es asalariado
             System.out.println("9. Salario Base Mensual: " + asalariado.getSalarioBaseMensual());
             System.out.println("10. Complemento Puesto: " + asalariado.getComplementoPuesto());
+            System.out.println("11. Hora Entrada: " + asalariado.getHoraEntrada());
+            System.out.println("12. Hora Salida: " + asalariado.getHoraSalida());
             System.out.println("-----------------------------------------");
 
             System.out.print("\nSeleccione un campo a modificar: ");
@@ -284,32 +289,44 @@ public class VistaConsola {
             System.out.println("9. Salario Mínimo Garantizado: " + ((EmpleadoComisionista) empleado).getSalarioMinimoGarantizado());
             System.out.println("10. Ventas Realizadas: " + ((EmpleadoComisionista) empleado).getVentasRealizadas());
             System.out.println("11. Porcentaje Comisión: " + ((EmpleadoComisionista) empleado).getPorcentajeComision());
+            System.out.println("12. Hora Entrada: " + ((EmpleadoComisionista) empleado).getHoraEntrada());
+            System.out.println("13. Hora Salida: " + ((EmpleadoComisionista) empleado).getHoraSalida());
             System.out.println("-----------------------------------------");
 
             System.out.print("\nSeleccione un campo a modificar: ");
             return leerEnteroSeguro();
         }
     }
-    public static int pedirNuevoCampoInt(String campo) {
+    public static int pedirNuevoCampoInt (String campo) {
         return introducirInt("\nNuevo " + campo);
     }
 
-    public static double pedirNuevoCampoDouble(String campo) {
+    public static double pedirNuevoCampoDouble (String campo) {
         return introducirDouble("\nNuevo " + campo);
-
     }
 
     public static String pedirNuevoCampoString (String campo) {
         return introducirString("\nNuevo " + campo);
-
     }
 
-    public static LocalDate pedirNuevoCampoFecha() {
+    public static LocalDate pedirNuevoCampoFecha () {
         return introducirFecha("\nNueva Fecha Alta (DD/MM/AAAA)");
+    }
+
+    public static LocalTime pedirNuevoCampoHora (String campo) {
+        return introducirHora("\nNuevo " + campo);
     }
 
     public static void mostrarCampoModificado (String campo, String modificacion) {
         System.out.println("\n  - " + campo + " modificado a [ " + modificacion + " ] -");
+
+        introParaContinuar("\nPresione INTRO para volver al selector de campos...");
+
+        limpiarPantalla();
+    }
+
+    public static void mostrarHoraModificada (String campo, LocalTime horaModificada) {
+        System.out.println("\n  - " + campo + " modificada a [ " + horaModificada.format(FORMATO_HORA) + " ] -");
 
         introParaContinuar("\nPresione INTRO para volver al selector de campos...");
 
@@ -405,13 +422,18 @@ public class VistaConsola {
         System.out.println("\n--- MENÚ DE EMPLEADO ---\n");
         System.out.println("0. Cerrar sesión de empleado");
         System.out.println("1. Consultar Nómina");
-        System.out.println("2. Registrar Fichaje Diario (Simulado)");
-        System.out.println("3. Cambiar Contraseña");
+        System.out.println("2. Consultar Horario");
 
-        if (empleado instanceof EmpleadoPorHoras)
-            System.out.println("4. Registrar Horas");
+        if (empleado instanceof EmpleadoPorHoras) {
+            System.out.println("3. Registrar Horas");
+        } else {
+            System.out.println("3. Registrar Fichaje Diario");
+        }
+
+        System.out.println("4. Cambiar Contraseña");
+
         if (empleado instanceof EmpleadoComisionista)
-            System.out.println("4. Registrar Ventas");
+            System.out.println("5. Registrar Ventas");
 
         System.out.print("\nSeleccione una opción: ");
         return leerEnteroSeguro();
@@ -555,6 +577,22 @@ public class VistaConsola {
         return introducirDouble("Complemento de Puesto (€)");
     }
 
+    public static int menuHorarioEmpleado () {
+        System.out.println("\n¿Desea introducir el horario o aplicar el horario por defecto?\n");
+        System.out.println("1. Introducir horario manualmente");
+        System.out.println("2. Usar horario por defecto (9:00 - 17:00)");
+        System.out.print("\nSeleccione una opción: ");
+
+        int opcion = leerEnteroSeguro();
+
+        System.out.println();
+        return opcion;
+    }
+
+    public static LocalTime pedirHoraEntradaEmpleado () { return introducirHora("Hora de entrada (HH:MM): "); }
+
+    public static LocalTime pedirHoraSalidaEmpleado () { return introducirHora("Hora de salida (HH:MM): "); }
+
     // Por horas ------------------------------------------------------------------------------
 
     public static Double pedirPrecioHoraEmpleado () {
@@ -562,7 +600,7 @@ public class VistaConsola {
     }
 
     public static int menuHorasEmpleado () {
-        System.out.println("\n¿Desea introducir horas específicas o aplicar el valor por defecto?\n");
+        System.out.println("\n¿Desea introducir horas trabajadas o aplicar el valor por defecto?\n");
         System.out.println("1. Introducir horas manualmente");
         System.out.println("2. Usar valor por defecto (160 horas)");
         System.out.print("\nSeleccione una opción: ");
@@ -721,39 +759,100 @@ public class VistaConsola {
         introParaContinuar("\nPresione INTRO para volver al menú anterior...");
     }
 
+    // =======================================================
+    //             FICHAJES DE ENTRADA Y SALIDA
+    // =======================================================
 
+    public static void mostrarExitoFichajeEntrada(LocalTime hora) {
+        System.out.printf("\nFichaje de ENTRADA registrado correctamente a las %02d:%02d.%n", hora.getHour(), hora.getMinute());
+        introParaContinuar("\nPresione INTRO para continuar...");
+    }
 
+    public static void mostrarExitoFichajeSalida(LocalTime hora) {
+        System.out.printf("\nFichaje de SALIDA registrado correctamente a las %02d:%02d.%n", hora.getHour(), hora.getMinute());
+        introParaContinuar("\nPresione INTRO para continuar...");
+    }
 
+    public static void mostrarAvisoRetraso(LocalTime hora, int faltasRestantes) {
+        System.out.printf("\n - Has entrado tarde hoy a las %02d:%02d. Registro de infracción guardado.%n", hora.getHour(), hora.getMinute());
+        if (faltasRestantes > 0) {
+            System.out.println("\nTe quedan " + faltasRestantes + " avisos este mes antes de bajar tu evaluación.");
+        }
+        introParaContinuar("\nPresione INTRO para continuar...");
+    }
 
+    public static void mostrarAvisoSalidaAnticipada(LocalTime hora, int faltasRestantes) {
+        System.out.printf("\n - Has fichado la salida demasiado pronto (%02d:%02d). Registro de infracción guardado.%n", hora.getHour(), hora.getMinute());
+        if (faltasRestantes > 0) {
+            System.out.println("\nTe quedan " + faltasRestantes + " avisos este mes antes de bajar tu evaluación.");
+        }
+        introParaContinuar("\nPresione INTRO para continuar...");
+    }
 
+    public static void mostrarAvisoPenalizacionEvaluacion() {
+        System.out.println("\n - Has alcanzado el límite de 10 infracciones. Se restará 1 punto de tu evaluacion.");
+        introParaContinuar("\nPresione INTRO para continuar...");
+    }
 
+    public static void mensajeErrorRegistroEntrada () {
+        System.out.println("\nHa ocurrido un error en el registro de la entrada, vuelva a intentarlo más tarde.");
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
 
+    public static void mensajeErrorRegistroSalida () {
+        System.out.println("\nHa ocurrido un error en el registro de la salida, vuelva a intentarlo más tarde.");
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
 
+    // =======================================================
+    //                     MOSTRAR HORARIO
+    // =======================================================
 
+    public static void menuMostrarHorario () {
+        limpiarPantalla();
 
+        System.out.println("\n -----------------------");
+        System.out.println(" --- MOSTRAR HORARIO ---");
+        System.out.println(" -----------------------\n");
+    }
 
+    public static void mostrarHorarioEmpleadoPorHoras () {
+        System.out.println("Un empleado con contrato POR HORAS no tiene un horario fijo establecido.");
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
 
+    public static void mostrarHorarioEmpleadoAsalariado (EmpleadoAsalariado empleadoAsalariado) {
+        LocalTime horaEntrada = empleadoAsalariado.getHoraEntrada();
+        LocalTime horaSalida = empleadoAsalariado.getHoraSalida();
 
+        System.out.println("Hora de entrada = " + horaEntrada.format(FORMATO_HORA) );
+        System.out.println("Hora de salida = " + horaSalida.format(FORMATO_HORA));
 
+        Duration duracion = Duration.between(horaEntrada, horaSalida);
+        long duracionHoras = duracion.toHours();
 
+        System.out.println("\n(Asalariado) Duración de la jornada = " + duracionHoras + " horas.");
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
 
+    public static void mostrarHorarioEmpleadoComisionista (EmpleadoComisionista empleadoComisionista) {
+        LocalTime horaEntrada = empleadoComisionista.getHoraEntrada();
+        LocalTime horaSalida = empleadoComisionista.getHoraSalida();
 
+        System.out.println("Hora de entrada = " + horaEntrada.format(FORMATO_HORA) );
+        System.out.println("Hora de salida = " + horaSalida.format(FORMATO_HORA));
 
+        Duration duracion = Duration.between(horaEntrada, horaSalida);
+        long duracionHoras = duracion.toHours();
 
-
-
-
-
-
-
-
-
-
+        System.out.println("\n(Comisionista) Duración de la jornada = " + duracionHoras + " horas.");
+        introParaContinuar("\nPresione INTRO para volver al menú anterior...");
+    }
 
     // ==========================================
     //          MÉTODOS AUXILIARES
     // ==========================================
-    private static int leerEnteroSeguro() {
+    private static int leerEnteroSeguro () {
         while (!teclado.hasNextInt()) {
             System.out.println("\nError: Debe introducir un número entero válido.");
             System.out.print("\nInténtelo de nuevo: ");
@@ -764,7 +863,7 @@ public class VistaConsola {
         return numero;
     }
 
-    private static double leerDoubleSeguro() {
+    private static double leerDoubleSeguro () {
         while (!teclado.hasNextDouble()) {
             System.out.println("\nError: Debe introducir un valor numérico decimal válido.");
             System.out.print("\nInténtelo de nuevo: ");
@@ -775,10 +874,10 @@ public class VistaConsola {
         return numero;
     }
 
-    private static LocalDate leerFechaSegura() {
+    private static LocalDate leerFechaSegura () {
         DateTimeFormatter formateador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         while (true) {
-            String entrada = teclado.nextLine();
+            String entrada = teclado.nextLine().trim();
             try {
                 return LocalDate.parse(entrada, formateador);
             } catch (java.time.format.DateTimeParseException e) {
@@ -788,7 +887,21 @@ public class VistaConsola {
         }
     }
 
-    private static void limpiarPantalla() {
+    private static LocalTime leerHoraSegura () {
+        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("HH:mm");
+
+        while (true) {
+            String entrada = teclado.nextLine().trim();
+            try {
+                return LocalTime.parse(entrada, formateador);
+            } catch (java.time.format.DateTimeParseException e) {
+                System.out.println("\nError: Formato de hora incorrecto. Use dos digitos para la hora y dos para los minutos.");
+                System.out.print("\nIntentelo de nuevo (HH:MM) (ej. 09:00): ");
+            }
+        }
+    }
+
+    private static void limpiarPantalla () {
         try {
             String sistemaOperativo = System.getProperty("os.name");
 
@@ -824,9 +937,13 @@ public class VistaConsola {
         return leerFechaSegura();
     }
 
+    private static LocalTime introducirHora (String peticion) {
+        System.out.print(peticion + ": ");
+        return leerHoraSegura();
+    }
+
     private static void introParaContinuar (String mensaje) {
         System.out.println(mensaje);
         teclado.nextLine();
     }
-
 }

@@ -1,5 +1,6 @@
 package modelo;
 
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
@@ -305,6 +306,12 @@ public class Empresa {
         listaEmpleados.add(nuevoAsalariado);
         return nuevoAsalariado;
     }
+    public Empleado agregarEmpleadoAsalariado(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double base, double complemento, LocalTime horaEntrada, LocalTime horaSalida, int contadorInfracciones) {
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
+        Empleado nuevoAsalariado = builder.paraAsalariado(base, complemento, horaEntrada, horaSalida, 0).build();
+        listaEmpleados.add(nuevoAsalariado);
+        return nuevoAsalariado;
+    }
 
     public Empleado agregarEmpleadoPorHoras(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double precioHora, int horas) {
         EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
@@ -330,6 +337,20 @@ public class Empresa {
     public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje) {
         EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
         Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje).build();
+        listaEmpleados.add(nuevoComisionista);
+        return nuevoComisionista;
+    }
+
+    public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje, double ventas, LocalTime horaEntrada, LocalTime horaSalida, int contadorInfracciones) {
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
+        Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje, ventas, horaEntrada, horaSalida, contadorInfracciones).build();
+        listaEmpleados.add(nuevoComisionista);
+        return nuevoComisionista;
+    }
+
+    public Empleado agregarEmpleadoComisionista(String id, String dni, String nombre, String apellidos, String email, String dept, String password, double minimoGarantizado, double porcentaje, LocalTime horaEntrada, LocalTime horaSalida, int contadorInfracciones) {
+        EmpleadoBuilder builder = crearNuevoEmpleadoBase(id, dni, nombre, apellidos, email, dept, password);
+        Empleado nuevoComisionista = builder.paraComisionista(minimoGarantizado, porcentaje, horaEntrada, horaSalida, contadorInfracciones).build();
         listaEmpleados.add(nuevoComisionista);
         return nuevoComisionista;
     }

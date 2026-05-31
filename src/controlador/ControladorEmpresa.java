@@ -4,6 +4,7 @@ import modelo.*;
 import vista.VistaConsola;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -179,7 +180,7 @@ public class ControladorEmpresa {
     }
 
     // ==========================================
-    //          MENÚ DEL EMPLEADO
+    //             MENÚ EMPLEADO
     // ==========================================
 
     private void menuEmpleado(Empleado empleado) {
@@ -199,32 +200,42 @@ public class ControladorEmpresa {
                     VistaConsola.mostrarNominaEmpleado(empleado);
                     break;
                 case 2:
-                    // CASO DE USO: Registrar fichaje diario
-                    System.out.println("Fichaje de Entrada registrado correctamente a las " + java.time.LocalTime.now());
+                    // CASO DE USO: Consultar horario
+                    VistaConsola.menuMostrarHorario();
+                    if (empleado instanceof EmpleadoPorHoras) {
+                        VistaConsola.mostrarHorarioEmpleadoPorHoras();
+                    } else if (empleado instanceof  EmpleadoAsalariado empleadoAsalariado) {
+                        VistaConsola.mostrarHorarioEmpleadoAsalariado(empleadoAsalariado);
+                    } else if (empleado instanceof  EmpleadoComisionista empleadoComisionista) {
+                        VistaConsola.mostrarHorarioEmpleadoComisionista(empleadoComisionista);
+                    }
                     break;
                 case 3:
+                    // CASO DE USO: Registrar fichaje diario / Registrar horas
+                    if (empleado instanceof EmpleadoPorHoras empleadoPorHoras) {
+                        int horasARegistrar = VistaConsola.pedirHorasARegistrar();
+                        empleadoPorHoras.registrarHoras(horasARegistrar);
+                        VistaConsola.mostrarHorasTrabajadasSumadas(empleadoPorHoras.getHorasTrabajadas(), horasARegistrar);
+                    } else {
+                        registrarFichajeDiario(empleado);
+                    }
+                    break;
+                case 4:
                     // CASO DE USO: Cambiar contraseña
                     cambiarContrasenia(empleado);
                     break;
-                case 4:
-                    switch (empleado) {
-                        case EmpleadoAsalariado empleadoAsalariado -> VistaConsola.mensajeOpcionNoValidaMenu(0, 3);
-                        case EmpleadoPorHoras empleadoPorHoras -> { // CASO DE USO: Registrar horas
-                            int horasARegistrar = VistaConsola.pedirHorasARegistrar();
-                            empleadoPorHoras.registrarHoras(horasARegistrar);
-                            VistaConsola.mostrarHorasTrabajadasSumadas(empleadoPorHoras.getHorasTrabajadas(), horasARegistrar);
-                        }
-                        case EmpleadoComisionista empleadoComisionista -> { // CASO DE USO: Registrar ventas
-                            double ventasARegistrar = VistaConsola.pedirVentasARegistrar();
-                            empleadoComisionista.registrarVenta(ventasARegistrar);
-                            VistaConsola.mostrarVentasRealizadasSumadas(empleadoComisionista.getVentasRealizadas(), ventasARegistrar);
-                        }
-                        case null, default -> VistaConsola.mensajeNoSeReconoceTipoEmpleado();
+                case 5:
+                    if (empleado instanceof EmpleadoComisionista empleadoComisionista) {
+                        double ventasARegistrar = VistaConsola.pedirVentasARegistrar();
+                        empleadoComisionista.registrarVenta(ventasARegistrar);
+                        VistaConsola.mostrarVentasRealizadasSumadas(empleadoComisionista.getVentasRealizadas(), ventasARegistrar);
+                    } else {
+                        VistaConsola.mensajeOpcionNoValidaMenu(0, 4);
                     }
                     break;
                 default:
-                    if (empleado instanceof EmpleadoAsalariado) {
-                        VistaConsola.mensajeOpcionNoValidaMenu(0, 3);
+                    if (empleado instanceof EmpleadoComisionista) {
+                        VistaConsola.mensajeOpcionNoValidaMenu(0, 5);
                     } else {
                         VistaConsola.mensajeOpcionNoValidaMenu(0, 4);
                     }
@@ -375,52 +386,98 @@ public class ControladorEmpresa {
                             }
                         } while (!bandera);
                         break;
+
                     case 9:
-                        if (empleado instanceof EmpleadoAsalariado asalariado) {
-                            double nuevoSalarioBase = VistaConsola.pedirNuevoCampoDouble("SALARIO BASE MENSUAL");
-                            asalariado.setSalarioBaseMensual(nuevoSalarioBase);
-                            VistaConsola.mostrarCampoModificado("SALARIO BASE MENSUAL", String.valueOf(nuevoSalarioBase));
-
-                        } else if (empleado instanceof EmpleadoPorHoras porHoras) {
-                            int nuevasHoras = VistaConsola.pedirNuevoCampoInt("HORAS TRABAJADAS");
-                            porHoras.setHorasTrabajadas(nuevasHoras);
-                            VistaConsola.mostrarCampoModificado("HORAS TRABAJADAS", String.valueOf(nuevasHoras));
-
-                        } else {
-                            double nuevoSalarioMinimo = VistaConsola.pedirNuevoCampoDouble("SALARIO MÍNIMO GARANTIZADO");
-                            ((EmpleadoComisionista) empleado).setSalarioMinimoGarantizado(nuevoSalarioMinimo);
-                            VistaConsola.mostrarCampoModificado("SALARIO MÍNIMO GARANTIZADO", String.valueOf(nuevoSalarioMinimo));
-
+                        switch (empleado) {
+                            case EmpleadoAsalariado asalariado -> {
+                                double nuevoSalarioBase = VistaConsola.pedirNuevoCampoDouble("SALARIO BASE MENSUAL");
+                                asalariado.setSalarioBaseMensual(nuevoSalarioBase);
+                                VistaConsola.mostrarCampoModificado("SALARIO BASE MENSUAL", String.valueOf(nuevoSalarioBase));
+                            }
+                            case EmpleadoPorHoras porHoras -> {
+                                int nuevasHoras = VistaConsola.pedirNuevoCampoInt("HORAS TRABAJADAS");
+                                porHoras.setHorasTrabajadas(nuevasHoras);
+                                VistaConsola.mostrarCampoModificado("HORAS TRABAJADAS", String.valueOf(nuevasHoras));
+                            }
+                            case EmpleadoComisionista comisionista -> {
+                                double nuevoSalarioMinimo = VistaConsola.pedirNuevoCampoDouble("SALARIO MÍNIMO GARANTIZADO");
+                                comisionista.setSalarioMinimoGarantizado(nuevoSalarioMinimo);
+                                VistaConsola.mostrarCampoModificado("SALARIO MÍNIMO GARANTIZADO", String.valueOf(nuevoSalarioMinimo));
+                            }
+                            default -> { }
                         }
                         break;
                     case 10:
-                        if (empleado instanceof EmpleadoAsalariado asalariado) {
-                            double nuevoComplemento = VistaConsola.pedirNuevoCampoDouble("COMPLEMENTO PUESTO");
-                            asalariado.setComplementoPuesto(nuevoComplemento);
-                            VistaConsola.mostrarCampoModificado("COMPLEMENTO PUESTO", String.valueOf(nuevoComplemento));
-
-                        } else if (empleado instanceof EmpleadoPorHoras porHoras) {
-                            int nuevoPrecioHora = VistaConsola.pedirNuevoCampoInt("PRECIO POR HORA");
-                            porHoras.setPrecioHora(nuevoPrecioHora);
-                            VistaConsola.mostrarCampoModificado("PRECIO POR HORA", String.valueOf(nuevoPrecioHora));
-
-                        } else {
-                            double nuevasVentas = VistaConsola.pedirNuevoCampoDouble("VENTAS REALIZADAS");
-                            ((EmpleadoComisionista) empleado).setVentasRealizadas(nuevasVentas);
-                            VistaConsola.mostrarCampoModificado("VENTAS REALIZADAS", String.valueOf(nuevasVentas));
+                        switch (empleado) {
+                            case EmpleadoAsalariado asalariado -> {
+                                double nuevoComplemento = VistaConsola.pedirNuevoCampoDouble("COMPLEMENTO PUESTO");
+                                asalariado.setComplementoPuesto(nuevoComplemento);
+                                VistaConsola.mostrarCampoModificado("COMPLEMENTO PUESTO", String.valueOf(nuevoComplemento));
+                            }
+                            case EmpleadoPorHoras porHoras -> {
+                                int nuevoPrecioHora = VistaConsola.pedirNuevoCampoInt("PRECIO POR HORA");
+                                porHoras.setPrecioHora(nuevoPrecioHora);
+                                VistaConsola.mostrarCampoModificado("PRECIO POR HORA", String.valueOf(nuevoPrecioHora));
+                            }
+                            case EmpleadoComisionista comisionista -> {
+                                double nuevasVentas = VistaConsola.pedirNuevoCampoDouble("VENTAS REALIZADAS");
+                                comisionista.setVentasRealizadas(nuevasVentas);
+                                VistaConsola.mostrarCampoModificado("VENTAS REALIZADAS", String.valueOf(nuevasVentas));
+                            }
+                            default -> { }
                         }
                         break;
                     case 11:
-                        if (empleado instanceof EmpleadoComisionista comisionista) {
-                            double nuevoPorcentaje = VistaConsola.pedirNuevoCampoDouble("PORCENTAJE DE COMISIÓN");
-                            comisionista.setPorcentajeComision(nuevoPorcentaje);
-                            VistaConsola.mostrarCampoModificado("PORCENTAJE DE COMISIÓN", String.valueOf(nuevoPorcentaje));
-                        } else {
-                            VistaConsola.mensajeOpcionNoValidaMenu(0, 10);
+                        switch (empleado) {
+                            case EmpleadoAsalariado asalariado -> {
+                                LocalTime nuevaHoraEntrada = VistaConsola.pedirNuevoCampoHora("HORA ENTRADA");
+                                asalariado.setHoraEntrada(nuevaHoraEntrada);
+                                VistaConsola.mostrarHoraModificada("HORA ENTRADA", nuevaHoraEntrada);
+                            }
+                            case EmpleadoPorHoras porHoras -> VistaConsola.mensajeOpcionNoValidaMenu(0, 10);
+                            case EmpleadoComisionista comisionista -> {
+                                double nuevoPorcentaje = VistaConsola.pedirNuevoCampoDouble("PORCENTAJE DE COMISIÓN");
+                                comisionista.setPorcentajeComision(nuevoPorcentaje);
+                                VistaConsola.mostrarCampoModificado("PORCENTAJE DE COMISIÓN", String.valueOf(nuevoPorcentaje));
+                            }
+                            default -> { }
+                        }
+                        break;
+                    case 12:
+                        switch (empleado) {
+                            case EmpleadoAsalariado asalariado -> {
+                                LocalTime nuevaHoraSalida = VistaConsola.pedirNuevoCampoHora("HORA SALIDA");
+                                asalariado.setHoraSalida(nuevaHoraSalida);
+                                VistaConsola.mostrarHoraModificada("HORA SALIDA", nuevaHoraSalida);
+                            }
+                            case EmpleadoPorHoras porHoras -> VistaConsola.mensajeOpcionNoValidaMenu(0, 10);
+                            case EmpleadoComisionista comisionista -> {
+                                LocalTime nuevaHoraEntrada = VistaConsola.pedirNuevoCampoHora("HORA ENTRADA");
+                                comisionista.setHoraEntrada(nuevaHoraEntrada);
+                                VistaConsola.mostrarHoraModificada("HORA ENTRADA", nuevaHoraEntrada);
+                            }
+                            default -> { }
+                        }
+                        break;
+                    case 13:
+                        switch (empleado) {
+                            case EmpleadoAsalariado asalariado -> VistaConsola.mensajeOpcionNoValidaMenu(0, 12);
+                            case EmpleadoPorHoras porHoras -> VistaConsola.mensajeOpcionNoValidaMenu(0, 10);
+                            case EmpleadoComisionista comisionista -> {
+                                LocalTime nuevaHoraSalida = VistaConsola.pedirNuevoCampoHora("HORA SALIDA");
+                                comisionista.setHoraSalida(nuevaHoraSalida);
+                                VistaConsola.mostrarHoraModificada("HORA SALIDA", nuevaHoraSalida);
+                            }
+                            default -> { }
                         }
                         break;
                     default:
-                        VistaConsola.mensajeOpcionNoValidaMenu(0, 11);
+                        switch (empleado) {
+                            case EmpleadoAsalariado asalariado -> VistaConsola.mensajeOpcionNoValidaMenu(0, 12);
+                            case EmpleadoPorHoras porHoras -> VistaConsola.mensajeOpcionNoValidaMenu(0, 10);
+                            case EmpleadoComisionista comisionista -> VistaConsola.mensajeOpcionNoValidaMenu(0, 13);
+                            default -> { }
+                        }
                         break;
                 }
             } while (opcion != 0);
@@ -507,13 +564,31 @@ public class ControladorEmpresa {
         } while (tipo != 1 && tipo != 2 && tipo != 3);
 
         Empleado empleadoAnadido;
+        int decisionHorario, decisionHoras;
+        LocalTime horaEntrada, horaSalida;
 
         try {
             switch (tipo) {
                 case 1: // ASALARIADO
-                    double base = VistaConsola.pedirSalarioBaseEmpleado();
-                    double complemento = VistaConsola.pedirComplementoPuestoEmpleado();
-                    empleadoAnadido = empresa.agregarEmpleadoAsalariado(id, dni, nombre, apellidos, email, dept, password, base, complemento);
+                    do {
+                        decisionHorario = VistaConsola.menuHorarioEmpleado();
+                        if (decisionHorario != 1 && decisionHorario != 2) {
+                            VistaConsola.mensajeOpcionNoValidaMenu(1, 2);
+                        }
+                    } while (decisionHorario != 1 && decisionHorario != 2);
+
+                    if (decisionHorario == 1) {
+                        horaEntrada = VistaConsola.pedirHoraEntradaEmpleado();
+                        horaSalida = VistaConsola.pedirHoraSalidaEmpleado();
+                        double base = VistaConsola.pedirSalarioBaseEmpleado();
+                        double complemento = VistaConsola.pedirComplementoPuestoEmpleado();
+                        empleadoAnadido = empresa.agregarEmpleadoAsalariado(id, dni, nombre, apellidos, email, dept, password, base, complemento, horaEntrada, horaSalida, 0);
+
+                    } else {
+                        double base = VistaConsola.pedirSalarioBaseEmpleado();
+                        double complemento = VistaConsola.pedirComplementoPuestoEmpleado();
+                        empleadoAnadido = empresa.agregarEmpleadoAsalariado(id, dni, nombre, apellidos, email, dept, password, base, complemento);
+                    }
 
                     VistaConsola.mostrarEmpleadoAnadido(empleadoAnadido, "ASALARIADO");
                     break;
@@ -521,7 +596,6 @@ public class ControladorEmpresa {
                 case 2: // POR HORAS
                     double precioHora = VistaConsola.pedirPrecioHoraEmpleado();
 
-                    int decisionHoras;
                     do {
                         decisionHoras = VistaConsola.menuHorasEmpleado();
                         if (decisionHoras != 1 && decisionHoras != 2) {
@@ -540,27 +614,62 @@ public class ControladorEmpresa {
                     break;
 
                 case 3: // COMISIONISTA
-                    double minimoGarantizado = VistaConsola.pedirSalarioMinimoEmpleado();
-                    double porcentaje;
                     do {
-                        porcentaje = VistaConsola.pedirPorcentajeComisionEmpleado();
-                        if (porcentaje < 0 || porcentaje > 1)
-                            VistaConsola.mensajePorcentajeErroneo();
-                    } while (porcentaje < 0 || porcentaje > 1);
-
-                    int decisionVentas;
-                    do {
-                        decisionVentas = VistaConsola.menuVentasEmpleado();
-                        if (decisionVentas != 1 && decisionVentas != 2)
+                        decisionHorario = VistaConsola.menuHorarioEmpleado();
+                        if (decisionHorario != 1 && decisionHorario != 2) {
                             VistaConsola.mensajeOpcionNoValidaMenu(1, 2);
-                    } while (decisionVentas != 1 && decisionVentas != 2);
+                        }
+                    } while (decisionHorario != 1 && decisionHorario != 2);
+
+                    if (decisionHorario == 1) {
+                        horaEntrada = VistaConsola.pedirHoraEntradaEmpleado();
+                        horaSalida = VistaConsola.pedirHoraSalidaEmpleado();
+                        double minimoGarantizado = VistaConsola.pedirSalarioMinimoEmpleado();
+                        double porcentaje;
+                        do {
+                            porcentaje = VistaConsola.pedirPorcentajeComisionEmpleado();
+                            if (porcentaje < 0 || porcentaje > 1)
+                                VistaConsola.mensajePorcentajeErroneo();
+                        } while (porcentaje < 0 || porcentaje > 1);
+
+                        int decisionVentas;
+                        do {
+                            decisionVentas = VistaConsola.menuVentasEmpleado();
+                            if (decisionVentas != 1 && decisionVentas != 2)
+                                VistaConsola.mensajeOpcionNoValidaMenu(1, 2);
+                        } while (decisionVentas != 1 && decisionVentas != 2);
 
 
-                    if (decisionVentas == 1) {
-                        double ventas = VistaConsola.pedirVentasEmpleado();
-                        empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje, ventas);
+                        if (decisionVentas == 1) {
+                            double ventas = VistaConsola.pedirVentasEmpleado();
+                            empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje, ventas, horaEntrada, horaSalida, 0);
+                        } else {
+                            empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje, horaEntrada, horaSalida, 0);
+                        }
+
                     } else {
-                        empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje);
+                        double minimoGarantizado = VistaConsola.pedirSalarioMinimoEmpleado();
+                        double porcentaje;
+                        do {
+                            porcentaje = VistaConsola.pedirPorcentajeComisionEmpleado();
+                            if (porcentaje < 0 || porcentaje > 1)
+                                VistaConsola.mensajePorcentajeErroneo();
+                        } while (porcentaje < 0 || porcentaje > 1);
+
+                        int decisionVentas;
+                        do {
+                            decisionVentas = VistaConsola.menuVentasEmpleado();
+                            if (decisionVentas != 1 && decisionVentas != 2)
+                                VistaConsola.mensajeOpcionNoValidaMenu(1, 2);
+                        } while (decisionVentas != 1 && decisionVentas != 2);
+
+
+                        if (decisionVentas == 1) {
+                            double ventas = VistaConsola.pedirVentasEmpleado();
+                            empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje, ventas);
+                        } else {
+                            empleadoAnadido = empresa.agregarEmpleadoComisionista(id, dni, nombre, apellidos, email, dept, password, minimoGarantizado, porcentaje);
+                        }
                     }
 
                     VistaConsola.mostrarEmpleadoAnadido(empleadoAnadido, "COMISIONISTA");
@@ -599,6 +708,74 @@ public class ControladorEmpresa {
             VistaConsola.mensajeMismaContrasenia();
         } else {
             VistaConsola.mensajeContraseniaErronea();
+        }
+    }
+
+    // CASO DE USO: Registrar fichaje diario
+    private void registrarFichajeDiario(Empleado empleado) {
+        if (empleado instanceof EmpleadoPorHoras) {
+            VistaConsola.mostrarExitoFichajeEntrada(LocalTime.now());
+            return;
+        }
+
+        if (empleado instanceof EmpleadoAsalariado emp) {
+            procesarControlHorario(emp, emp.getHoraEntrada(), emp.getHoraSalida());
+        } else if (empleado instanceof EmpleadoComisionista emp) {
+            procesarControlHorario(emp, emp.getHoraEntrada(), emp.getHoraSalida());
+        }
+    }
+
+    // 3. EL MOTOR DE CONTROL: Este método hace todo el trabajo sucio sin duplicar código
+// Recibe el empleado genérico (para poder subirle las infracciones) y sus horarios específicos
+    private void procesarControlHorario(Empleado empleado, LocalTime entradaEstipulada, LocalTime salidaEstipulada) {
+        LocalTime horaActual = LocalTime.now();
+
+        // Decidimos si es Entrada o Salida (Margen de 4 horas desde la entrada oficial)
+        boolean esEntrada = horaActual.isBefore(entradaEstipulada.plusHours(4));
+
+        if (esEntrada) {
+            // REGLA: Más de 15 minutos tarde
+            if (horaActual.isAfter(entradaEstipulada.plusMinutes(15))) {
+                int actuales;
+                if (empleado instanceof EmpleadoAsalariado empleadoAsalariado){
+                    actuales = empleadoAsalariado.incrementarInfracciones(1);
+                } else if (empleado instanceof  EmpleadoComisionista empleadoComisionista) {
+                    actuales = empleadoComisionista.incrementarInfracciones(1);
+                } else {
+                    VistaConsola.mensajeErrorRegistroEntrada();
+                    return;
+                }
+
+                int restantes = 10 - actuales;
+
+                VistaConsola.mostrarAvisoRetraso(horaActual, restantes);
+                if (restantes <= 0) {
+                    VistaConsola.mostrarAvisoPenalizacionEvaluacion();
+                }
+            } else {
+                VistaConsola.mostrarExitoFichajeEntrada(horaActual);
+            }
+        } else {
+            // REGLA: Más de 15 minutos antes de la hora de salida
+            if (horaActual.isBefore(salidaEstipulada.minusMinutes(15))) {
+                int actuales;
+                if (empleado instanceof EmpleadoAsalariado empleadoAsalariado){
+                    actuales = empleadoAsalariado.incrementarInfracciones(1);
+                } else if (empleado instanceof  EmpleadoComisionista empleadoComisionista) {
+                    actuales = empleadoComisionista.incrementarInfracciones(1);
+                } else {
+                    VistaConsola.mensajeErrorRegistroSalida();
+                    return;
+                }
+                int restantes = 10 - actuales;
+
+                VistaConsola.mostrarAvisoSalidaAnticipada(horaActual, restantes);
+                if (restantes <= 0) {
+                    VistaConsola.mostrarAvisoPenalizacionEvaluacion();
+                }
+            } else {
+                VistaConsola.mostrarExitoFichajeSalida(horaActual);
+            }
         }
     }
 

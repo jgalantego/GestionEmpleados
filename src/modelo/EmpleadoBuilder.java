@@ -1,6 +1,7 @@
 package modelo;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class EmpleadoBuilder {
     // Atributos comunes
@@ -9,12 +10,16 @@ public class EmpleadoBuilder {
     private String nombre;
     private String apellidos;
     private String email;
-    private LocalDate fechaAlta = LocalDate.now(); // Valor por defecto
+    private final LocalDate fechaAlta = LocalDate.now();
     private String departamento;
     private String password;
 
     // Atributos específicos según el tipo de contrato
     private TipoContrato tipoContrato;
+
+    private LocalTime horaEntrada;
+    private LocalTime horaSalida;
+    private int contadorInfracciones;
     private double salarioBaseMensual;
     private double complementoPuesto;
     private double precioHora;
@@ -26,6 +31,9 @@ public class EmpleadoBuilder {
     public EmpleadoBuilder () {
         this.horasTrabajadas = -1;
         this.ventasRealizadas = -1.0;
+        this.horaEntrada = null;
+        this.horaSalida = null;
+        this.contadorInfracciones = -1;
     }
 
     // Métodos para asignar valores al builder
@@ -54,11 +62,6 @@ public class EmpleadoBuilder {
         return this;
     }
 
-    public EmpleadoBuilder setFechaAlta(LocalDate fechaAlta) {
-        this.fechaAlta = fechaAlta;
-        return this;
-    }
-
     public EmpleadoBuilder setDepartamento(String departamento) {
         this.departamento = departamento;
         return this;
@@ -74,6 +77,15 @@ public class EmpleadoBuilder {
         this.tipoContrato = TipoContrato.ASALARIADO;
         this.salarioBaseMensual = salarioBase;
         this.complementoPuesto = complemento;
+        return this;
+    }
+    public EmpleadoBuilder paraAsalariado(double salarioBase, double complemento, LocalTime horaEntrada, LocalTime horaSalida, int contadorInfracciones) {
+        this.tipoContrato = TipoContrato.ASALARIADO;
+        this.salarioBaseMensual = salarioBase;
+        this.complementoPuesto = complemento;
+        this.horaEntrada = horaEntrada;
+        this.horaSalida = horaSalida;
+        this.contadorInfracciones = contadorInfracciones;
         return this;
     }
 
@@ -105,6 +117,29 @@ public class EmpleadoBuilder {
         return this;
     }
 
+    public EmpleadoBuilder paraComisionista(double minimoGarantizado, double porcentaje, double ventas, LocalTime horaEntrada, LocalTime horaSalida, int contadorInfracciones) {
+        this.tipoContrato = TipoContrato.COMISIONISTA;
+        this.salarioMinimoGarantizado = minimoGarantizado;
+        this.porcentajeComision = porcentaje;
+        this.ventasRealizadas = ventas;
+        this.horaEntrada = horaEntrada;
+        this.horaSalida = horaSalida;
+        this.contadorInfracciones = contadorInfracciones;
+        return this;
+    }
+    public EmpleadoBuilder paraComisionista(double minimoGarantizado, double porcentaje, LocalTime horaEntrada, LocalTime horaSalida, int contadorInfracciones) {
+        this.tipoContrato = TipoContrato.COMISIONISTA;
+        this.salarioMinimoGarantizado = minimoGarantizado;
+        this.porcentajeComision = porcentaje;
+        this.horaEntrada = horaEntrada;
+        this.horaSalida = horaSalida;
+        this.contadorInfracciones = contadorInfracciones;
+        return this;
+    }
+
+    //=======================================================================================================
+    //                                             BUILD
+    //=======================================================================================================
 
     public Empleado build() {
         // Validaciones básicas (independientes del tipo de empleado)
@@ -118,7 +153,11 @@ public class EmpleadoBuilder {
                 if (!validarDoubleNoNegativo(salarioBaseMensual, "SALARIO BASE MENSUAL") || !validarDoubleNoNegativo(complementoPuesto, "COMPLEMENTO PUESTO"))
                     throw new IllegalStateException("Error: Faltan datos críticos para construir el empleado.");
 
-                return new EmpleadoAsalariado(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioBaseMensual, complementoPuesto);
+                if (this.horaEntrada == null) {
+                    return new EmpleadoAsalariado(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioBaseMensual, complementoPuesto);
+                } else {
+                    return new EmpleadoAsalariado(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioBaseMensual, complementoPuesto, horaEntrada, horaSalida, contadorInfracciones);
+                }
 
             case HORAS:
                 // Validaciones por horas
@@ -138,13 +177,20 @@ public class EmpleadoBuilder {
                 if (!validarDoubleNoNegativo(salarioMinimoGarantizado, "SALARIO MÍNIMO GARANTIZADO") || !validarEntreCeroYUno(porcentajeComision, "PORCENTAJE COMISIÓN"))
                     throw new IllegalStateException("Error: Faltan datos críticos para construir el empleado.");
 
-                if (ventasRealizadas == -1)
+                if (ventasRealizadas == -1 && horaEntrada == null) {
                     return new EmpleadoComisionista(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioMinimoGarantizado, porcentajeComision);
+                } else if (ventasRealizadas == -1) {
+                    return new EmpleadoComisionista(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioMinimoGarantizado, porcentajeComision, horaEntrada, horaSalida, contadorInfracciones);
+                } else if (horaEntrada == null) {
+                    if (!validarDoubleNoNegativo(ventasRealizadas, "VENTAS REALIZADAS"))
+                        throw new IllegalStateException("Error: Faltan datos críticos para construir el empleado.");
+                    return new EmpleadoComisionista(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioMinimoGarantizado, porcentajeComision, ventasRealizadas);
+                } else {
+                    if (!validarDoubleNoNegativo(ventasRealizadas, "VENTAS REALIZADAS"))
+                        throw new IllegalStateException("Error: Faltan datos críticos para construir el empleado.");
 
-                if (!validarDoubleNoNegativo(ventasRealizadas, "VENTAS REALIZADAS"))
-                    throw new IllegalStateException("Error: Faltan datos críticos para construir el empleado.");
-
-                return new EmpleadoComisionista(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioMinimoGarantizado, porcentajeComision, ventasRealizadas);
+                    return new EmpleadoComisionista(id, dni, nombre, apellidos, email, fechaAlta, departamento, password, salarioMinimoGarantizado, porcentajeComision, ventasRealizadas, horaEntrada, horaSalida, contadorInfracciones);
+                }
 
             default:
                 throw new IllegalStateException("Tipo de contrato desconocido");
